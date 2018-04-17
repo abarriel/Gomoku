@@ -1,1 +1,3 @@
 Gomoku
+*.o
+.DS_Store
