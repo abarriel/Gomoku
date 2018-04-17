@@ -11,11 +11,11 @@ int main( int argc, char const **argv )
 	bool quit(false);
 	GameManager *GameMan;
 
-	SDLMan = new SDLManager();
 	if (argc == 2 && strncmp("default", argv[1], 7) == 0)
 		GameMan = new GameManager(false);
 	else
 		GameMan = new GameManager(true);
+	SDLMan = new SDLManager();
 	SDLMan->render();
 	while(!quit) {
 		try {
