@@ -13,6 +13,7 @@ class Vec {
 		Vec &	operator=( Vec const & rhs );
 
 		int			operator==( Vec const & cs ) const;
+		int			operator!=( Vec const & cs ) const;
 
 		Vec 		operator+( Vec const & cs ) const;
 		Vec 		operator-( Vec const & cs ) const;

@@ -39,6 +39,10 @@ int			Vec::operator==( Vec const & cs ) const {
 	return ((int)this->x == (int)cs.x && (int)this->y == (int)cs.y);
 }
 
+int			Vec::operator!=( Vec const & cs ) const {
+	return ((int)this->x != (int)cs.x || (int)this->y != (int)cs.y);
+}
+
 Vec &	Vec::operator=(Vec const &rhs) {
 	if (this != &rhs) {
 		this->x = rhs.x;

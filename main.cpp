@@ -4,7 +4,7 @@
 #include "GameManager.class.hpp"
 #include "Vec.class.hpp"
 
-int main( void )
+int main( int argc, char const **argv )
 {
 	SDLManager *SDLMan;
 	SDL_Event event;
@@ -12,7 +12,10 @@ int main( void )
 	GameManager *GameMan;
 
 	SDLMan = new SDLManager();
-	GameMan = new GameManager();
+	if (argc == 2 && strncmp("default", argv[1], 7) == 0)
+		GameMan = new GameManager(false);
+	else
+		GameMan = new GameManager(true);
 	SDLMan->render();
 	while(!quit) {
 		try {

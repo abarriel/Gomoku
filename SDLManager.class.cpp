@@ -35,9 +35,9 @@ void SDLManager::placeRock(int color, Vec vec) {
 	pos.w = 41;
   	pos.h = 41;
 	switch(color) {
-    	case 1 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
+    	case 1 : SDL_RenderCopy(this->MainRenderer, this->BlackRock, NULL, &pos);
              break;
-    	case 2 : SDL_RenderCopy(this->MainRenderer, this->BlackRock, NULL, &pos);
+    	case 2 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
              break;
 		default : break;
 	}
@@ -51,9 +51,9 @@ void SDLManager::placeRock(int color, unsigned short int point) {
 	pos.w = 41;
   	pos.h = 41;
 	switch(color) {
-    	case 1 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
+    	case 1 : SDL_RenderCopy(this->MainRenderer, this->BlackRock, NULL, &pos);
              break;
-    	case 2 : SDL_RenderCopy(this->MainRenderer, this->BlackRock, NULL, &pos);
+    	case 2 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
              break;
 		default : break;
 	}

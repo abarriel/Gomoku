@@ -1,7 +1,57 @@
 #include "GameManager.class.hpp"
 
-GameManager::GameManager( void ) : turn(1), PlayerOne(new Human("Human 1")), PlayerTwo(new Human("Human 2")) {
+GameManager::GameManager( bool asking ) :
+	turn(1),
+	canCapture(true),
+	endingCapture(true),
+	noDoubleThrees(true),
+	gameMode(0),
+	swapOportunity(false)
+{
+	std::string res;
 
+	if (asking) {
+		std::cout << "Game mode (STANDARD/pro/long-pro/swap/swap2):" << std::endl;
+		std::cin >> res;
+		if (res == "pro")
+			this->gameMode = 2;
+		if (res == "long-pro")
+			this->gameMode = 3;
+		if (res == "swap")
+			this->gameMode = 4;
+		if (res == "swap2")
+			this->gameMode = 5;
+		std::cout << "Capture mode (Y/n):" << std::endl;
+		std::cin >> res;
+		if (res == "n") {
+			this->canCapture = false;
+			this->endingCapture = false;
+		} else {
+			std::cout << "Ending capture mode (Y/n):" << std::endl;
+			std::cin >> res;
+			if (res == "n")
+				this->endingCapture = false;
+		}
+		std::cout << "No double-threes (Y/n):" << std::endl;
+		std::cin >> res;
+		if (res == "n")
+			this->noDoubleThrees = false;
+		std::cout << "Human player 1 (Y/n):" << std::endl;
+		std::cin >> res;
+		if (res == "n")
+			this->PlayerOne = new BotHenry();
+		else
+			this->PlayerOne = new Human();
+		std::cout << "Human player 2 (Y/n):" << std::endl;
+		std::cin >> res;
+		if (res == "n")
+			this->PlayerTwo = new BotHenry();
+		else
+			this->PlayerTwo = new Human();
+	} else {
+		this->PlayerOne = new Human("Human 1");
+		this->PlayerTwo = new BotHenry("Bot Henry 2");
+	}
 	return;
 }
 
@@ -19,24 +69,92 @@ void GameManager::printGrid(SDLManager *SDLMan) {
 	}
 }
 
+void GameManager::twoTurn(APlayer *player, SDLManager *SDLMan) {
+	unsigned short int place;
+
+	place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	this->grid[place] = ((this->turn + 1) % 2) + 1;
+	this->printGrid(SDLMan);
+	SDLMan->render();
+	place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees );
+	this->grid[place] = 3 - (((this->turn + 1) % 2) + 1);
+	this->printGrid(SDLMan);
+	SDLMan->render();
+}
+
+unsigned short int GameManager::threeTurn(APlayer *player, SDLManager *SDLMan) {
+	unsigned short int place;
+
+	place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	this->grid[place] = ((this->turn + 1) % 2) + 1;
+	this->printGrid(SDLMan);
+	SDLMan->render();
+	place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees );
+	this->grid[place] = 3 - (((this->turn + 1) % 2) + 1);
+	this->printGrid(SDLMan);
+	SDLMan->render();
+	return player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+}
+
 char GameManager::playTurn(SDLManager *SDLMan) {
 	unsigned short int place;
 	APlayer *player;
+	bool skipPlace = false;
 
-	if (this->turn == 1)
+	if (this->turn % 2 == 1)
 		player = PlayerOne;
 	else
 		player = PlayerTwo;
-	place = player->play( this->grid, this->turn );
-	this->grid[place] = this->turn;
-	player->increasePoint(capture(&this->grid, place));
+	if (this->swapOportunity) {
+		this->swapOportunity = false;
+		if (player->wantSwap(this->grid)) {
+			std::cout << player->getName() << " swap!" << std::endl;
+			player = this->PlayerOne;
+			this->PlayerOne = this->PlayerTwo;
+			this->PlayerTwo = player;
+			if (this->turn % 2 == 1)
+				player = PlayerOne;
+			else
+				player = PlayerTwo;
+			place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+		} else if (this->gameMode & 1 && player->wantDoublePlay(this->grid)) {
+			std::cout << player->getName() << " double play!" << std::endl;
+			this->swapOportunity = true;
+			this->gameMode --;
+			skipPlace = true;
+			this->twoTurn(player, SDLMan);
+			player = this->PlayerOne;
+			this->PlayerOne = this->PlayerTwo;
+			this->PlayerTwo = player;
+			if (this->turn % 2 == 1)
+				player = PlayerOne;
+			else
+				player = PlayerTwo;
+			this->turn -= 1;
+		} else
+			place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	}
+	else if (this->turn == 1 && this->gameMode & 4) {
+		place = this->threeTurn(player, SDLMan);
+		this->swapOportunity = true;
+	}
+	else if (this->turn == 1 && this->gameMode & 2)
+		place = 2313;
+	else if (this->turn == 3 && this->gameMode & 2)
+		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees );
+	else
+		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	if (!skipPlace)
+		this->grid[place] = ((this->turn + 1) % 2) + 1;
+	if (this->canCapture)
+		player->increasePoint(capture(&this->grid, place));
 	this->printGrid(SDLMan);
 	SDLMan->render();
-	if (player->haveWin() || checkBoard(&this->grid)) {
+	if (player->haveWin() || checkBoard(&this->grid, this->endingCapture)) {
 		player->victory();
 		return (1);
 	}
-	turn = 3 - turn;
+	this->turn++;
 	return 0;
 }
 
@@ -69,89 +187,104 @@ char GameManager::checkCapture(std::map<unsigned short int, char> *grid, Vec pla
 	return 2;
 }
 
-bool GameManager::doubleThrees(std::map<unsigned short, char> *grid, unsigned short int place, char value) {
-	char check;
-	int res = 0;
-	Vec Vplace = UsiToVec(place);
+unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, Vec from, Vec to, Vec dir, char value, Vec skip) {
+	unsigned short int res;
 
-	check = (*grid)[place];
-	(*grid)[place] = value;
-	res += checkThrees(grid, Vplace, Vec(1, 0), value) || checkThrees(grid, Vplace - Vec(1, 0), Vec(1, 0), value);
-	res += checkThrees(grid, Vplace, Vec(1, 1), value) || checkThrees(grid, Vplace - Vec(1, 1), Vec(1, 1), value);
-	res += checkThrees(grid, Vplace, Vec(0, 1), value) || checkThrees(grid, Vplace - Vec(0, 1), Vec(0, 1), value);
-	res += checkThrees(grid, Vplace, Vec(-1, 1), value) || checkThrees(grid, Vplace - Vec(-1, 1), Vec(-1, 1), value);
-	res += checkThrees(grid, Vplace, Vec(1, -1), value) || checkThrees(grid, Vplace - Vec(1, -1), Vec(1, -1), value);
-	res += checkThrees(grid, Vplace, Vec(0, -1), value) || checkThrees(grid, Vplace - Vec(0, -1), Vec(0, -1), value);
-	res += checkThrees(grid, Vplace, Vec(-1, -1), value) || checkThrees(grid, Vplace - Vec(-1, -1), Vec(-1, -1), value);
-	res += checkThrees(grid, Vplace, Vec(-1, 0), value) || checkThrees(grid, Vplace - Vec(-1, 0), Vec(-1, 0), value);
-	(*grid)[place] = check;
-
-	if (res > 1)
-		return true;
-	return false;
+	res = 0;
+	while (from != to + dir) {
+		res = res << 2;
+		if (from.x >= 0 && from.x <= 18 && from.y >= 0 && from.y <= 18) {
+			if (grid[VecToUsi(from)]) {
+				if (grid[VecToUsi(from)] == value)
+					res += 1;
+				else
+					res += 2;
+			}
+		}
+		else
+			res += 3;
+		from = from + dir;
+		if (from == skip)
+			from = from + dir;
+	}
+	return res;
 }
 
-char GameManager::checkThrees(std::map<unsigned short int, char> *grid, Vec place, Vec dir, char value) {
-	Vec tmp = place + dir * 4;
-	Vec tmp2 = place - dir;
-	char check = 0;
-
-	if (tmp.x < 0 || tmp.x > 18 || tmp.y < 0 || tmp.y > 18 ||
-		tmp2.x < 0 || tmp2.x > 18 || tmp2.y < 0 || tmp2.y > 18 ||
-		3 - value == (*grid)[VecToUsi(place + dir)] ||
-		3 - value == (*grid)[VecToUsi(place + dir * 2)] ||
-		3 - value == (*grid)[VecToUsi(place + dir * 3)] ||
-		3 - value == (*grid)[VecToUsi(place + dir * 4)] ||
-		3 - value == (*grid)[VecToUsi(place - dir)] ||
-		3 - value == (*grid)[VecToUsi(place)]
-	)
-		return 0;
-	check += (value == (*grid)[VecToUsi(place + dir)]) ? 1 : 0;
-	check += (value == (*grid)[VecToUsi(place + dir * 2)]) ? 1 : 0;
-	check += (value == (*grid)[VecToUsi(place + dir * 3)]) ? 1 : 0;
-	check += (value == (*grid)[VecToUsi(place)]) ? 1 : 0;
-	if (check == 3) {
+char GameManager::SeqIsThree(unsigned short int seq) {
+	if ((seq | 61455) == 61775)
 		return 1;
-	}
+	if ((seq | 49215) == 50495)
+		return 1;
+	if ((seq | 64515) == 64595)
+		return 1;
+	if ((seq | 64512) == 64532)
+		return 1;
+	if ((seq | 64512) == 64580)
+		return 1;
+	if ((seq | 49167) == 50255)
+		return 1;
+	if ((seq | 61443) == 61715)
+		return 1;
+	if ((seq | 63) == 4415)
+		return 1;
+	if ((seq | 63) == 5183)
+		return 1;
 	return 0;
 }
 
-bool GameManager::goodIput(std::map<unsigned short, char> *grid, char value, SDL_Event *event) {
-	unsigned short int pos;
+bool GameManager::doubleThrees(std::map<unsigned short, char> *grid, unsigned short int place, char value) {
+	unsigned short int seq;
+	Vec Vplace = UsiToVec(place);
+	Vec dir = Vec(1, 0);
+	char res = 0;
 
-	if (event->button.type == SDL_MOUSEBUTTONDOWN &&
-		event->button.button == SDL_BUTTON_LEFT &&
-		event->button.windowID == 1 &&
-		event->button.x >= 125 && event->button.y >= 125 &&
-		event->button.x <= 1075 && event->button.y <= 1075)
-	{
-		pos = ((event->button.x - 125) / 50) + ((event->button.y - 125) / 50) * 256;
-		if ((*grid)[pos] != 0 || doubleThrees(grid, pos, value))
-			return false;
-		return true;
-	}
-	return false;
+	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	res += SeqIsThree(seq);
+	dir = Vec(0, 1);
+	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	res += SeqIsThree(seq);
+	dir = Vec(1, 1);
+	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	res += SeqIsThree(seq);
+	dir = Vec(-1, 1);
+	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	res += SeqIsThree(seq);
+	if (res > 1)
+		return 1;
+	return 0;
 }
 
-char GameManager::checkBoard(std::map<unsigned short int, char> *grid) {
+bool GameManager::goodIput(std::map<unsigned short, char> *grid, char value, unsigned short int pos, char mode, bool noDouble = true) {
+	if (mode & 2) {
+		Vec tmp = UsiToVec(pos);
+		if (tmp.x >= (7 - (mode & 1)) && tmp.y >= (7 - (mode & 1)) &&
+			tmp.x <= (11 + (mode & 1)) && tmp.y <= (11 + (mode & 1)))
+			return false;
+	}
+	if ((*grid)[pos] != 0 || (noDouble && doubleThrees(grid, pos, value)))
+		return false;
+	return true;
+}
+
+char GameManager::checkBoard(std::map<unsigned short int, char> *grid, bool ending = true) {
 	char res = 0;
 
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, 0))))
+			if ((res = checkFive(grid, Vec(x, y), Vec(1, 0), ending)))
 				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(0, 1))))
+			if ((res = checkFive(grid, Vec(x, y), Vec(0, 1), ending)))
 				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, 1))))
+			if ((res = checkFive(grid, Vec(x, y), Vec(1, 1), ending)))
 				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, -1))))
+			if ((res = checkFive(grid, Vec(x, y), Vec(1, -1), ending)))
 				return res;
 		}
 	}
 	return res;
 }
 
-char GameManager::checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
+char GameManager::checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending = true) {
 	Vec tmp = place + dir * 4;
 
 	if ((*grid)[VecToUsi(place)] == 0)
@@ -160,9 +293,9 @@ char GameManager::checkFive(std::map<unsigned short int, char> *grid, Vec place,
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(tmp)] ||
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir)] ||
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 2)] ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 3)] ||
+		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 3)] || ((
 		canBeEat(grid, place) || canBeEat(grid, place + dir) || canBeEat(grid, tmp) ||
-		canBeEat(grid, place * 2) || canBeEat(grid, place + dir * 3)
+		canBeEat(grid, place * 2) || canBeEat(grid, place + dir * 3)) && ending)
 	)
 		return 0;
 	return (*grid)[VecToUsi(place)];
