@@ -9,7 +9,7 @@ LNKFLAGS =
 
 # DIRECTORIES
 LIBDIR = lib
-SRCDIR = .
+SRCDIR = src
 OBJDIR = obj
 INCDIR = includes
 
