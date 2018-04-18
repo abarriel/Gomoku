@@ -5,7 +5,7 @@
 # include <map>
 # include <list>
 # include <algorithm>
-#include <stack>
+# include <stack>
 # include <string>
 
 # include "SDLManager.class.hpp"
@@ -31,6 +31,7 @@ class GameManager {
 		static unsigned short int VecToUsi(Vec vec);
 		static bool goodInput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
 		char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
+		static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip);
 
 	private:
 
@@ -54,7 +55,6 @@ class GameManager {
 		static std::list<unsigned short> canBeEat(std::map<unsigned short int, char> *grid, Vec place);
 		static unsigned short int checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir);
 		static char SeqIsThree(unsigned short int seq);
-        static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip);
 		static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, Vec from, Vec to, Vec dir, char value, Vec skip);
 };
 

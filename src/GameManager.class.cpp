@@ -235,11 +235,11 @@ unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, u
 }
 
 char GameManager::SeqIsThree(unsigned short int seq) {
-	if ((seq | 61455) == 61775)
+	if ((seq | 61455) == 61775 && ((seq | 53247) == 53247 || (seq | 65523) == 65523))
 		return 1;
-	if ((seq | 49215) == 50495)
+	if ((seq | 49215) == 50495 && ((seq | 16383) == 16383 || (seq | 65487) == 65487))
 		return 1;
-	if ((seq | 64515) == 64595)
+	if ((seq | 64515) == 64595 && ((seq | 62463) == 62463 || (seq | 65532) == 65532))
 		return 1;
 	if ((seq | 64512) == 64532)
 		return 1;
@@ -299,7 +299,7 @@ char GameManager::checkBoard(std::map<unsigned short int, char> *grid, bool endi
 			res += this->checkFive(grid, Vec(x, y), Vec(0, 1), ending);
 			res += this->checkFive(grid, Vec(x, y), Vec(1, 1), ending);
 			res += this->checkFive(grid, Vec(x, y), Vec(1, -1), ending);
-            if (res) 
+            if (res)
                 return res;
 		}
 	}
@@ -352,7 +352,7 @@ std::list<unsigned short> GameManager::canBeEat(std::map<unsigned short, char> *
 }
 
 unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
-	if ((*grid)[VecToUsi(place + dir)] != (*grid)[VecToUsi(place)]) // pas de moi dans la direction 
+	if ((*grid)[VecToUsi(place + dir)] != (*grid)[VecToUsi(place)]) // pas de moi dans la direction
 		return 0;
 	if ((*grid)[VecToUsi(place + dir * 2)] == 0 && (*grid)[VecToUsi(place - dir)] == 3 - (*grid)[VecToUsi(place)]) // 2 1(*) 1 0
 	 	return ((VecToUsi(place + dir * 2)) + 1);

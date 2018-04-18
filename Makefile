@@ -2,7 +2,7 @@ NAME = Gomoku
 
 # COMPILATION
 CC = clang++
-CCFLAGS = -Wall -Werror -Wextra
+CCFLAGS = -Wall -Werror -Wextra 
 
 LNK = clang++
 LNKFLAGS =
@@ -15,7 +15,11 @@ INCDIR = includes
 
 # SOURCES
 LIB =
-SRC = main.cpp SDLManager.class.hpp SDLManager.class.cpp Vec.class.hpp Vec.class.cpp GameManager.class.hpp GameManager.class.cpp APlayer.class.hpp APlayer.class.cpp Human.class.hpp Human.class.cpp BotHenry.class.hpp BotHenry.class.cpp
+SRC = main.cpp SDLManager.class.hpp SDLManager.class.cpp Vec.class.hpp Vec.class.cpp \
+		GameManager.class.hpp GameManager.class.cpp APlayer.class.hpp APlayer.class.cpp \
+		Human.class.hpp Human.class.cpp BotHenry.class.hpp BotHenry.class.cpp \
+		Heuristic.class.hpp Heuristic.class.cpp
+
 
 # **************************************************************************** #
 
