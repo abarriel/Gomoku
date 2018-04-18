@@ -14,17 +14,18 @@ Human::~Human( void ) {
 
 unsigned short int Human::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
 	SDL_Event event;
-	std::cout << this->getName() << " turn" << std::endl;
+	std::cout << "Human " << this->getName();
+    unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
 		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
 	    	throw std::exception();
-        if (this->goodInput(&grid, value, &event, mode, noDouble) && 
-            this->checkForceToPlace(((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256))
+        nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+        if (this->goodInput(&grid, value, &event, mode, noDouble) && this->checkForceToPlace(nextMove))
                 break ;
 	}
-    // std::cout << ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256 << std::endl;
-	return ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+    std::cout << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
+	return nextMove;
 }
 
 bool Human::goodAwnser(SDL_Event *event) {

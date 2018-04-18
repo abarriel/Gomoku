@@ -13,7 +13,7 @@ BotHenry::~BotHenry( void ) {
 }
 
 unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
-	std::cout << this->getName() << " turn" << std::endl;
+	std::cout << "AI play" << std::endl;
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			if (GameManager::goodInput(&grid, value, y * 256 + x, mode, noDouble))

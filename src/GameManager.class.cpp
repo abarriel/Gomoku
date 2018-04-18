@@ -25,28 +25,28 @@ GameManager::GameManager( bool asking ) :
         this->gameMode = 4;
     if (res == "swap2")
         this->gameMode = 5;
-    std::cout << "Capture mode (Y/n):" << std::endl;
+    std::cout << "Capture mode (Y/n): ";
     std::cin >> res;
     if (res == "n") {
         this->canCapture = false;
         this->endingCapture = false;
     } else {
-        std::cout << "Ending capture mode (Y/n):" << std::endl;
+        std::cout << "Ending capture mode (Y/n): ";
         std::cin >> res;
         if (res == "n")
             this->endingCapture = false;
     }
-    std::cout << "No double-threes (Y/n):" << std::endl;
+    std::cout << "No double-threes (Y/n): ";
     std::cin >> res;
     if (res == "n")
         this->noDoubleThrees = false;
-    std::cout << "Human player 1 (Y/n):" << std::endl;
+    std::cout << "Human player 1 (Y/n): ";
     std::cin >> res;
     if (res == "n")
         this->PlayerOne = new BotHenry();
     else
         this->PlayerOne = new Human();
-    std::cout << "Human player 2 (Y/n):" << std::endl;
+    std::cout << "Human player 2 (Y/n): ";
     std::cin >> res;
     if (res == "n")
         this->PlayerTwo = new BotHenry();
@@ -361,7 +361,7 @@ unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *gri
 }
 
 Vec GameManager::UsiToVec(unsigned short int usi) {
-	return Vec(usi & 15, usi >> 8);
+	return Vec(usi & 0xFF , usi >> 8);
 }
 
 unsigned short int GameManager::VecToUsi(Vec vec) {
