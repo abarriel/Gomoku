@@ -52,7 +52,12 @@ GameManager::GameManager( bool asking ) :
 		this->PlayerOne = new Human("Black");
 		this->PlayerTwo = new Human("White");
 	}
+	this->history = new std::stack<unsigned short int>;
 	return;
+}
+
+std::stack<unsigned short int> const &GameManager::getHistory() const {
+        return *this->history;
 }
 
 GameManager::~GameManager( void ) {
@@ -72,11 +77,11 @@ void GameManager::printGrid(SDLManager *SDLMan) {
 void GameManager::twoTurn(APlayer *player, SDLManager *SDLMan) {
 	unsigned short int place;
 
-	place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
 	this->grid[place] = ((this->turn + 1) % 2) + 1;
 	this->printGrid(SDLMan);
 	SDLMan->render();
-	place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees );
+	this->history->push(place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees ));
 	this->grid[place] = 3 - (((this->turn + 1) % 2) + 1);
 	this->printGrid(SDLMan);
 	SDLMan->render();
@@ -85,11 +90,11 @@ void GameManager::twoTurn(APlayer *player, SDLManager *SDLMan) {
 unsigned short int GameManager::threeTurn(APlayer *player, SDLManager *SDLMan) {
 	unsigned short int place;
 
-	place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+	this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
 	this->grid[place] = ((this->turn + 1) % 2) + 1;
 	this->printGrid(SDLMan);
 	SDLMan->render();
-	place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees );
+	this->history->push(place = player->play( this->grid, 3 - (((this->turn + 1) % 2) + 1), 0, this->noDoubleThrees ));
 	this->grid[place] = 3 - (((this->turn + 1) % 2) + 1);
 	this->printGrid(SDLMan);
 	SDLMan->render();
@@ -127,7 +132,7 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 				player = PlayerOne;
 			else
 				player = PlayerTwo;
-			place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+			this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
 		} else if (this->gameMode & 1 && player->wantDoublePlay(this->grid)) {
 			std::cout << player->getName() << " double play!" << std::endl;
 			this->swapOportunity = true;
@@ -143,18 +148,18 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 				player = PlayerTwo;
 			this->turn -= 1;
 		} else
-			place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+			this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
 	}
 	else if (this->turn == 1 && this->gameMode & 4) {
-		place = this->threeTurn(player, SDLMan);
+		this->history->push(place = this->threeTurn(player, SDLMan));
 		this->swapOportunity = true;
 	}
 	else if (this->turn == 1 && this->gameMode & 2)
-		place = 2313;
+		this->history->push(place = 2313);
 	else if (this->turn == 3 && this->gameMode & 2)
-		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees );
+		this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees ));
 	else
-		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+		this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
 	if (!skipPlace)
 		this->grid[place] = ((this->turn + 1) % 2) + 1;
 	if (this->canCapture)

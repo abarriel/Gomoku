@@ -3,7 +3,9 @@
 
 # include <iostream>
 # include <map>
+#include <stack>
 # include <string>
+
 # include "SDLManager.class.hpp"
 # include "APlayer.class.hpp"
 # include "Human.class.hpp"
@@ -21,6 +23,8 @@ class GameManager {
 		void twoTurn(APlayer *player, SDLManager *SDLMan);
 		bool cantContinue( void );
 
+		std::stack<unsigned short int> const &getHistory( void ) const;
+
 		static Vec UsiToVec(unsigned short int usi);
 		static unsigned short int VecToUsi(Vec vec);
 		static bool goodIput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
@@ -29,6 +33,7 @@ class GameManager {
 	private:
 
 		std::map<unsigned short int, char> grid;
+		std::stack<unsigned short int> *history;
 
 		unsigned short int	turn;
 		APlayer *PlayerOne;
