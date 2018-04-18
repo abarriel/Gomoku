@@ -208,14 +208,18 @@ char GameManager::checkCapture(std::map<unsigned short int, char> *grid, Vec pla
 }
 
 unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, Vec from, Vec to, Vec dir, char value, Vec skip) {
+    return (GameManager::SeqFromTo(grid, VecToUsi(from), VecToUsi(to), VecToUsi(dir), value, VecToUsi(skip)));
+}
+
+unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip) {
 	unsigned short int res;
 
 	res = 0;
 	while (from != to + dir) {
 		res = res << 2;
-		if (from.x >= 0 && from.x <= 18 && from.y >= 0 && from.y <= 18) {
-			if (grid[VecToUsi(from)]) {
-				if (grid[VecToUsi(from)] == value)
+		if ((from & 0xFF) >= 0 && (from & 0xFF) <= 18 && (from >> 8)>= 0 && (from >> 8)<= 18) {
+			if (grid[from]) {
+				if (grid[from] == value)
 					res += 1;
 				else
 					res += 2;
