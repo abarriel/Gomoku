@@ -9,50 +9,49 @@ GameManager::GameManager( bool asking ) :
 	swapOportunity(false)
 {
 	std::string res;
-
-	if (asking) {
-		std::cout << "Game mode (STANDARD/pro/long-pro/swap/swap2):" << std::endl;
-		std::cin >> res;
-		if (res == "pro")
-			this->gameMode = 2;
-		if (res == "long-pro")
-			this->gameMode = 3;
-		if (res == "swap")
-			this->gameMode = 4;
-		if (res == "swap2")
-			this->gameMode = 5;
-		std::cout << "Capture mode (Y/n):" << std::endl;
-		std::cin >> res;
-		if (res == "n") {
-			this->canCapture = false;
-			this->endingCapture = false;
-		} else {
-			std::cout << "Ending capture mode (Y/n):" << std::endl;
-			std::cin >> res;
-			if (res == "n")
-				this->endingCapture = false;
-		}
-		std::cout << "No double-threes (Y/n):" << std::endl;
-		std::cin >> res;
-		if (res == "n")
-			this->noDoubleThrees = false;
-		std::cout << "Human player 1 (Y/n):" << std::endl;
-		std::cin >> res;
-		if (res == "n")
-			this->PlayerOne = new BotHenry();
-		else
-			this->PlayerOne = new Human();
-		std::cout << "Human player 2 (Y/n):" << std::endl;
-		std::cin >> res;
-		if (res == "n")
-			this->PlayerTwo = new BotHenry();
-		else
-			this->PlayerTwo = new Human();
-	} else {
-		this->PlayerOne = new Human("Black");
-		this->PlayerTwo = new Human("White");
-	}
 	this->history = new std::stack<unsigned short int>;
+    if (!asking) {
+		this->PlayerOne = new Human("Black");
+        this->PlayerTwo = new Human("White");
+        return;
+    }
+    std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
+    std::cin >> res;
+    if (res == "pro")
+        this->gameMode = 2;
+    if (res == "long-pro")
+        this->gameMode = 3;
+    if (res == "swap")
+        this->gameMode = 4;
+    if (res == "swap2")
+        this->gameMode = 5;
+    std::cout << "Capture mode (Y/n):" << std::endl;
+    std::cin >> res;
+    if (res == "n") {
+        this->canCapture = false;
+        this->endingCapture = false;
+    } else {
+        std::cout << "Ending capture mode (Y/n):" << std::endl;
+        std::cin >> res;
+        if (res == "n")
+            this->endingCapture = false;
+    }
+    std::cout << "No double-threes (Y/n):" << std::endl;
+    std::cin >> res;
+    if (res == "n")
+        this->noDoubleThrees = false;
+    std::cout << "Human player 1 (Y/n):" << std::endl;
+    std::cin >> res;
+    if (res == "n")
+        this->PlayerOne = new BotHenry();
+    else
+        this->PlayerOne = new Human();
+    std::cout << "Human player 2 (Y/n):" << std::endl;
+    std::cin >> res;
+    if (res == "n")
+        this->PlayerTwo = new BotHenry();
+    else
+        this->PlayerTwo = new Human();
 	return;
 }
 

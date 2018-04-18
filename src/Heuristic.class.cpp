@@ -36,7 +36,10 @@ void Heuristic::seqToThree(unsigned short cur, unsigned short dir) {
 }
 
 char Heuristic::deductThree(unsigned short seq) {
-	if ((seq | 65295) == 65375) {
+    if (((seq | 0xF0FF) == 0xF4FF) || ((seq | 0xFCFF) == 0xFDFF)) {
+        return 0;
+    }
+	if ((seq | 0xFF0F) == 0xFF5F) {
 		if ((seq | 0xFC00) == 0xFC54 ) {
 			return 4;
 		} else if (((seq | 0xFF00) == 0xFC51) || ((seq | 0xFF00) == 0xFC54) || ((seq | 0xFC03) == 0xFC57)) {
@@ -46,7 +49,7 @@ char Heuristic::deductThree(unsigned short seq) {
 		} else if (((seq | 0xFC03) == 0xF053) || ((seq | 0xFF00) == 0xFF50) || ((seq | 0xF00F) == 0xF05F)) {
 			return 1;
 		}
-	} else if ((seq | 65283) == 65303) {
+	} else if ((seq | 0xFF03) == 0xFF17) {
 		if ((seq | 0xFF00) == 0xFF15) {
 			return 3;
 		} else if ((seq | 0xFC00) == 0xFC14) {
@@ -54,7 +57,7 @@ char Heuristic::deductThree(unsigned short seq) {
 		} else if (((seq | 0xFC03) == 0xFC17) || ((seq | 0xFF00) == 0xFF14)) {
 			return 1;
 		}
-	} else if ((seq | 65283) == 65351) {
+	} else if ((seq | 0xFF03) == 0xFF47) {
 		if ((seq | 0xFF00) == 0xFF45) {
 			return 3;
 		} else if ((seq | 0xFC00) == 0xFC44) {
@@ -107,7 +110,7 @@ X!@011! -> XX@0111 HALF FOUR
 		-> X0@011X -> XX@0110 HALF THREE
 
 
-XXXX 000X 65283
+XXXX 000X 0xFF03
 
 X!@101! -> XX@1011 HALF FOUR
 		-> X0@1010 FREE THREE
