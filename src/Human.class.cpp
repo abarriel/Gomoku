@@ -15,11 +15,15 @@ Human::~Human( void ) {
 unsigned short int Human::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
 	SDL_Event event;
 	std::cout << this->getName() << " turn" << std::endl;
-	while ( !this->goodIput(&grid, value, &event, mode, noDouble) ) {
+	while (1) {
 		SDL_WaitEvent(&event);
 		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
 	    	throw std::exception();
+        if (this->goodInput(&grid, value, &event, mode, noDouble) && 
+            this->checkForceToPlace(((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256))
+                break ;
 	}
+    // std::cout << ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256 << std::endl;
 	return ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
 }
 
@@ -62,7 +66,7 @@ bool Human::wantDoublePlay( std::map<unsigned short int, char> grid ) const {
 	return false;
 }
 
-bool Human::goodIput(std::map<unsigned short, char> *grid, char value, SDL_Event *event, char mode, bool noDouble = true) {
+bool Human::goodInput(std::map<unsigned short, char> *grid, char value, SDL_Event *event, char mode, bool noDouble = true) {
 	unsigned short int pos;
 
 	if (event->button.type == SDL_MOUSEBUTTONDOWN &&
@@ -72,7 +76,7 @@ bool Human::goodIput(std::map<unsigned short, char> *grid, char value, SDL_Event
 		event->button.x <= 1075 && event->button.y <= 1075)
 	{
 		pos = ((event->button.x - 125) / 50) + ((event->button.y - 125) / 50) * 256;
-		return GameManager::goodIput(grid, value, pos, mode, noDouble);
+		return GameManager::goodInput(grid, value, pos, mode, noDouble);
 	}
 	return false;
 }

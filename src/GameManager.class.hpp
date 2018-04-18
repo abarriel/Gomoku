@@ -3,6 +3,8 @@
 
 # include <iostream>
 # include <map>
+# include <list>
+# include <algorithm>
 # include <string>
 # include "SDLManager.class.hpp"
 # include "APlayer.class.hpp"
@@ -23,8 +25,8 @@ class GameManager {
 
 		static Vec UsiToVec(unsigned short int usi);
 		static unsigned short int VecToUsi(Vec vec);
-		static bool goodIput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
-		static char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
+		static bool goodInput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
+		char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
 
 	private:
 
@@ -39,13 +41,13 @@ class GameManager {
 		char	gameMode;
 		bool	swapOportunity;
 
+		char checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending);
 		static char capture(std::map<unsigned short int, char> *grid, unsigned short int place);
 		static char checkCapture(std::map<unsigned short int, char> *grid, Vec place, Vec dir);
 		static bool doubleThrees(std::map<unsigned short, char> *grid, unsigned short int place, char value);
 		static char checkThrees(std::map<unsigned short int, char> *grid, Vec place, Vec dir, char value);
-		static char checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending);
-		static bool canBeEat(std::map<unsigned short int, char> *grid, Vec place);
-		static char checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir);
+		static std::list<unsigned short> canBeEat(std::map<unsigned short int, char> *grid, Vec place);
+		static unsigned short int checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir);
 		static char SeqIsThree(unsigned short int seq);
 		static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, Vec from, Vec to, Vec dir, char value, Vec skip);
 };

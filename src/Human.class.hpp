@@ -17,7 +17,7 @@ class Human : public APlayer{
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const;
 		virtual bool wantDoublePlay( std::map<unsigned short int, char> grid ) const;
 		static bool goodAwnser(SDL_Event *event);
-		static bool goodIput(std::map<unsigned short int, char> *grid, char value, SDL_Event *event, char mode, bool noDouble);
+		static bool goodInput(std::map<unsigned short int, char> *grid, char value, SDL_Event *event, char mode, bool noDouble);
 };
 
 

@@ -99,7 +99,7 @@ unsigned short int GameManager::threeTurn(APlayer *player, SDLManager *SDLMan) {
 bool GameManager::cantContinue() {
 	for (unsigned short int x = 0; x < 19; x++) {
 		for (unsigned short int y = 0; y < 19; y++) {
-			if (goodIput(&this->grid, ((this->turn + 1) % 2) + 1, y * 256 + x, 0, this->noDoubleThrees))
+			if (goodInput(&this->grid, ((this->turn + 1) % 2) + 1, y * 256 + x, 0, this->noDoubleThrees))
 				return (false);
 		}
 	}
@@ -145,16 +145,19 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 		} else
 			place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
 	}
-	else if (this->turn == 1 && this->gameMode & 4) {
-		place = this->threeTurn(player, SDLMan);
-		this->swapOportunity = true;
-	}
-	else if (this->turn == 1 && this->gameMode & 2)
-		place = 2313;
-	else if (this->turn == 3 && this->gameMode & 2)
-		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees );
-	else
-		place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+    else if (this->turn == 1 && this->gameMode & 4) {
+        place = this->threeTurn(player, SDLMan);
+        this->swapOportunity = true;
+    }
+    else if (this->turn == 1 && this->gameMode & 2)
+        place = 2313;
+    else if (this->turn == 3 && this->gameMode & 2)
+        place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees );
+    else
+    {
+        place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+        player->setStopUntilPlace().clear();
+    }
 	if (!skipPlace)
 		this->grid[place] = ((this->turn + 1) % 2) + 1;
 	if (this->canCapture)
@@ -267,7 +270,7 @@ bool GameManager::doubleThrees(std::map<unsigned short, char> *grid, unsigned sh
 	return 0;
 }
 
-bool GameManager::goodIput(std::map<unsigned short, char> *grid, char value, unsigned short int pos, char mode, bool noDouble = true) {
+bool GameManager::goodInput(std::map<unsigned short, char> *grid, char value, unsigned short int pos, char mode, bool noDouble = true) {
 	if (mode & 2) {
 		Vec tmp = UsiToVec(pos);
 		if (tmp.x >= (7 - (mode & 1)) && tmp.y >= (7 - (mode & 1)) &&
@@ -284,14 +287,12 @@ char GameManager::checkBoard(std::map<unsigned short int, char> *grid, bool endi
 
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, 0), ending)))
-				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(0, 1), ending)))
-				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, 1), ending)))
-				return res;
-			if ((res = checkFive(grid, Vec(x, y), Vec(1, -1), ending)))
-				return res;
+			res = this->checkFive(grid, Vec(x, y), Vec(1, 0), ending);
+			res += this->checkFive(grid, Vec(x, y), Vec(0, 1), ending);
+			res += this->checkFive(grid, Vec(x, y), Vec(1, 1), ending);
+			res += this->checkFive(grid, Vec(x, y), Vec(1, -1), ending);
+            if (res) 
+                return res;
 		}
 	}
 	return res;
@@ -299,43 +300,56 @@ char GameManager::checkBoard(std::map<unsigned short int, char> *grid, bool endi
 
 char GameManager::checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending = true) {
 	Vec tmp = place + dir * 4;
+    std::list<unsigned short> checkBeEat;
+    std::list<unsigned short> res;
 
 	if ((*grid)[VecToUsi(place)] == 0)
 		return 0;
+    checkBeEat = canBeEat(grid, place);
+    for (int i = 1; i <= 4; i++) {
+        res = canBeEat(grid, place + dir * i);
+        checkBeEat.merge(res);
+    }
+    if(!checkBeEat.empty() && !ending)
+        checkBeEat.clear();
 	if (tmp.x < 0 || tmp.x > 18 || tmp.y < 0 || tmp.y > 18 ||
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(tmp)] ||
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir)] ||
 		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 2)] ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 3)] || ((
-		canBeEat(grid, place) || canBeEat(grid, place + dir) || canBeEat(grid, tmp) ||
-		canBeEat(grid, place * 2) || canBeEat(grid, place + dir * 3)) && ending)
-	)
-		return 0;
+		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 3)]) {
+            return 0;
+        }
+    if (!checkBeEat.empty())
+    {
+        if ((*grid)[VecToUsi(place)] == 1) // PLAYER 1
+            this->PlayerTwo->setStopUntilPlace() = checkBeEat;
+        else if ((*grid)[VecToUsi(place)] == 2) // PLAYER 1
+            this->PlayerOne->setStopUntilPlace() = checkBeEat;
+        return 0;
+    }
 	return (*grid)[VecToUsi(place)];
 }
 
-bool GameManager::canBeEat(std::map<unsigned short, char> *grid, Vec place) {
-	bool res;
-
-	res = false;
-	res += checkEat(grid, place, Vec(1, 0));
-	res += checkEat(grid, place, Vec(1, -1));
-	res += checkEat(grid, place, Vec(1, 1));
-	res += checkEat(grid, place, Vec(0, -1));
-	res += checkEat(grid, place, Vec(0, 1));
-	res += checkEat(grid, place, Vec(-1, 0));
-	res += checkEat(grid, place, Vec(-1, 1));
-	res += checkEat(grid, place, Vec(-1, -1));
-	return res;
+std::list<unsigned short> GameManager::canBeEat(std::map<unsigned short, char> *grid, Vec place) {
+    std::list<unsigned short> nextEnnemyPos;
+    // res = false;
+    for (int xe = 1; xe >= -1; xe--)
+        for (int ye = 1; ye >= -1; ye--) {
+            if ((xe == 0 && ye == 0)) continue;
+            unsigned short res = checkEat(grid, place, Vec(xe, ye));
+            if (res == 0) continue;
+            nextEnnemyPos.push_back(res - 1);
+        }
+	return nextEnnemyPos;
 }
 
-char GameManager::checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
-	if ((*grid)[VecToUsi(place + dir)] != (*grid)[VecToUsi(place)])
+unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
+	if ((*grid)[VecToUsi(place + dir)] != (*grid)[VecToUsi(place)]) // pas de moi dans la direction 
 		return 0;
-	if ((*grid)[VecToUsi(place + dir * 2)] == 0 && (*grid)[VecToUsi(place - dir)] == 3 - (*grid)[VecToUsi(place)])
-	 	return 1;
-		if ((*grid)[VecToUsi(place + dir * 2)] == 3 - (*grid)[VecToUsi(place)] && (*grid)[VecToUsi(place - dir)] == 0)
-		 	return 1;
+	if ((*grid)[VecToUsi(place + dir * 2)] == 0 && (*grid)[VecToUsi(place - dir)] == 3 - (*grid)[VecToUsi(place)]) // 2 1(*) 1 0
+	 	return ((VecToUsi(place + dir * 2)) + 1);
+    if ((*grid)[VecToUsi(place + dir * 2)] == 3 - (*grid)[VecToUsi(place)] && (*grid)[VecToUsi(place - dir)] == 0) // 0 1(*) 1 2
+        return ((VecToUsi(place - dir)) + 1);
 	return 0;
 }
 

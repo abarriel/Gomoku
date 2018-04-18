@@ -16,7 +16,7 @@ unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char 
 	std::cout << this->getName() << " turn" << std::endl;
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
-			if (GameManager::goodIput(&grid, value, y * 256 + x, mode, noDouble))
+			if (GameManager::goodInput(&grid, value, y * 256 + x, mode, noDouble))
 				return (y * 256 + x);
 		}
 	}
