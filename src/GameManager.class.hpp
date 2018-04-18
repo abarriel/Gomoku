@@ -32,6 +32,7 @@ class GameManager {
 		static bool goodInput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
 		char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
 		static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip);
+		static char capture(std::map<unsigned short int, char> *grid, unsigned short int place);
 
 	private:
 
@@ -48,7 +49,6 @@ class GameManager {
 		bool	swapOportunity;
 
 		char checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending);
-		static char capture(std::map<unsigned short int, char> *grid, unsigned short int place);
 		static char checkCapture(std::map<unsigned short int, char> *grid, Vec place, Vec dir);
 		static bool doubleThrees(std::map<unsigned short, char> *grid, unsigned short int place, char value);
 		static char checkThrees(std::map<unsigned short int, char> *grid, Vec place, Vec dir, char value);

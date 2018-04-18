@@ -21,6 +21,7 @@ class APlayer {
 		void increasePoint( char pnt );
 		bool haveWin( void ) const;
 		std::string getName( void ) const;
+		char getPoint( void ) const;
 
         std::list<unsigned short int>& setStopUntilPlace(void);
         std::list<unsigned short int> getStopUntilPlace(void) const;

@@ -47,5 +47,9 @@ void APlayer::increasePoint( char pnt ) {
 }
 
 std::string APlayer::getName() const {
-	return name;
+	return this->name;
+}
+
+char APlayer::getPoint() const {
+	return this->point;
 }
