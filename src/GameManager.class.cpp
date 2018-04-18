@@ -49,8 +49,8 @@ GameManager::GameManager( bool asking ) :
 		else
 			this->PlayerTwo = new Human();
 	} else {
-		this->PlayerOne = new Human("Human 1");
-		this->PlayerTwo = new BotHenry("Bot Henry 2");
+		this->PlayerOne = new Human("Black");
+		this->PlayerTwo = new Human("White");
 	}
 	return;
 }
@@ -94,6 +94,17 @@ unsigned short int GameManager::threeTurn(APlayer *player, SDLManager *SDLMan) {
 	this->printGrid(SDLMan);
 	SDLMan->render();
 	return player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees );
+}
+
+bool GameManager::cantContinue() {
+	for (unsigned short int x = 0; x < 19; x++) {
+		for (unsigned short int y = 0; y < 19; y++) {
+			if (goodIput(&this->grid, ((this->turn + 1) % 2) + 1, y * 256 + x, 0, this->noDoubleThrees))
+				return (false);
+		}
+	}
+	std::cout << "It's draw !" << std::endl;
+	return (true);
 }
 
 char GameManager::playTurn(SDLManager *SDLMan) {
@@ -155,6 +166,8 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 		return (1);
 	}
 	this->turn++;
+	if (this->cantContinue())
+		return 1;
 	return 0;
 }
 

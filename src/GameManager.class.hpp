@@ -19,6 +19,7 @@ class GameManager {
 		char playTurn( SDLManager *SDLMan );
 		unsigned short int threeTurn(APlayer *player, SDLManager *SDLMan);
 		void twoTurn(APlayer *player, SDLManager *SDLMan);
+		bool cantContinue( void );
 
 		static Vec UsiToVec(unsigned short int usi);
 		static unsigned short int VecToUsi(Vec vec);
@@ -29,7 +30,7 @@ class GameManager {
 
 		std::map<unsigned short int, char> grid;
 
-		char	turn;
+		unsigned short int	turn;
 		APlayer *PlayerOne;
 		APlayer *PlayerTwo;
 		bool canCapture;
