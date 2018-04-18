@@ -9,7 +9,7 @@ SDLManager::SDLManager( void ) {
     if(this->MainWindow == 0)
         return;
 	this->MainRenderer = SDL_CreateRenderer(this->MainWindow, -1, SDL_RENDERER_ACCELERATED);
-	img = SDL_LoadBMP("img/plateau.bmp");
+	img = SDL_LoadBMP("img/board.bmp");
 	if (img == 0)
 		return;
 	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, img);
