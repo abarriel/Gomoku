@@ -32,12 +32,12 @@ class GameManager {
 		static bool goodInput(std::map<unsigned short int, char> *grid, char value, unsigned short int pos, char mode, bool noDouble);
 		char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
 		static unsigned short int SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip);
-
+        static GameManager *instance(bool = true);
 	private:
 
 		std::map<unsigned short int, char> grid;
 		std::stack<unsigned short int> *history;
-
+        static GameManager *p_instance;
 		unsigned short int	turn;
 		APlayer *PlayerOne;
 		APlayer *PlayerTwo;
