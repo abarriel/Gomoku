@@ -24,10 +24,9 @@ class Heuristic {
 		unsigned int getScore() const;
 		void run( void );
 
-		void countThree( void );
-		//void countFour();
+		void countLine( void );
 
-		//void deductScore();
+		void deductScore();
 
 	private:
 
@@ -37,8 +36,8 @@ class Heuristic {
 		unsigned int score;
 		Heuristic::playerData p[2];
 
-		void seqToThree(unsigned short cur, unsigned short dir);
-		char deductThree(unsigned short seq);
+		void seqToLine(unsigned short cur, unsigned short dir);
+		char deductLine(unsigned short seq);
 
 };
 

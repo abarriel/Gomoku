@@ -6,6 +6,8 @@
 # include "APlayer.class.hpp"
 # include "GameManager.class.hpp"
 
+# define MAX_DEPTH 2      // need to be even
+
 class BotHenry : public APlayer{
 
 	public:

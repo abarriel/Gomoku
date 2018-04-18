@@ -16,15 +16,35 @@ unsigned int Heuristic::getScore() const { return this->score; }
 void Heuristic::run() {
 	(void)this->id;
 	(void)this->history;
-	this->countThree();
+	this->countLine();
+	this->deductScore();
 }
 
-void Heuristic::seqToThree(unsigned short cur, unsigned short dir) {
+void Heuristic::deductScore() {
+	char oponent = (3 - this->id) - 1;
+
+	this->score = 0;
+	if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)
+		this->score = 0;
+	if (this->p[this->id - 1].fourFree > 0)
+		this->score = 999999;
+	else if (this->p[oponent].threeFree > 0)
+		this->score = 0;
+	else if (this->p[this->id - 1].fourHalf + this->p[this->id - 1].threeFree > 1)
+		this->score = 999999;
+	else {
+		this->score += this->p[this->id - 1].threeHalf;
+		this->score += this->p[this->id - 1].fourHalf + this->p[this->id - 1].threeFree * 5;
+		this->score += 1000 - this->p[oponent].threeHalf;
+	}
+}
+
+void Heuristic::seqToLine(unsigned short cur, unsigned short dir) {
 	unsigned short seq;
 	char res;
 
 	seq = GameManager::SeqFromTo(this->grid, cur - (dir * 2), cur + (dir * 4), dir, this->grid[cur], cur);
-	res = deductThree(seq);
+	res = deductLine(seq);
 	if (res == 1)
 		this->p[this->grid[cur] - 1].threeHalf++;
 	else if(res == 2)
@@ -35,7 +55,7 @@ void Heuristic::seqToThree(unsigned short cur, unsigned short dir) {
 		this->p[this->grid[cur] - 1].fourFree++;
 }
 
-char Heuristic::deductThree(unsigned short seq) {
+char Heuristic::deductLine(unsigned short seq) {
     if (((seq | 0xF0FF) == 0xF4FF) || ((seq | 0xFCFF) == 0xFDFF)) {
         return 0;
     }
@@ -69,17 +89,17 @@ char Heuristic::deductThree(unsigned short seq) {
 	return 0;
 }
 
-void Heuristic::countThree( void ) {
+void Heuristic::countLine( void ) {
 	unsigned short cur;
 
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			cur = y * 256 + x;
 			if (this->grid[cur] != 0) {
-				this->seqToThree(cur, 1);
-				this->seqToThree(cur, 256);
-				this->seqToThree(cur, 257);
-				this->seqToThree(cur, 255);
+				this->seqToLine(cur, 1);
+				this->seqToLine(cur, 256);
+				this->seqToLine(cur, 257);
+				this->seqToLine(cur, 255);
 			}
 		}
 	}
