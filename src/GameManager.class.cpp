@@ -1,5 +1,6 @@
 #include "GameManager.class.hpp"
 
+GameManager *GameManager::p_instance = 0;
 GameManager::GameManager( bool asking ) :
 	turn(1),
 	canCapture(true),
@@ -175,6 +176,21 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 	if (this->cantContinue())
 		return 1;
 	return 0;
+}
+
+char GameManager::otherPoint(char o) {
+	if (this->PlayerOne->getPoint() == o)
+		return this->PlayerTwo->getPoint();
+	return this->PlayerOne->getPoint();
+}
+
+bool GameManager::getEnding( void ) {
+	return this->endingCapture;
+}
+APlayer& GameManager::getPlayer(char which) {
+	if (which == 1)
+		return this->PlayerOne;
+	return this->PlayerTwo;
 }
 
 char GameManager::capture(std::map<unsigned short int, char> *grid, unsigned short int place) {
@@ -359,7 +375,10 @@ unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *gri
         return ((VecToUsi(place - dir)) + 1);
 	return 0;
 }
-
+GameManager *GameManager::instance(bool d) { /* singleton */
+	if (!GameManager::p_instance) GameManager::p_instance = new GameManager(d);
+	return GameManager::p_instance;
+}
 Vec GameManager::UsiToVec(unsigned short int usi) {
 	return Vec(usi & 0xFF , usi >> 8);
 }

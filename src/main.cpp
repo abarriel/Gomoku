@@ -10,11 +10,11 @@ int main( int argc, char const **argv )
 	SDL_Event event;
 	bool quit(false);
 	GameManager *GameMan;
-
+    // GameManager::instance();
 	if (argc == 2 && strncmp("default", argv[1], 7) == 0)
-		GameMan = new GameManager(false);
+		GameMan = GameManager::instance(false);
 	else
-		GameMan = new GameManager(true);
+		GameMan = GameManager::instance(true);
 	SDLMan = new SDLManager();
 	SDLMan->render();
 	while(!quit) {
