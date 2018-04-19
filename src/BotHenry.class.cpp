@@ -23,8 +23,8 @@ unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char 
 	cur = 0;
 	currentPoint = this->getPoint();
 	oponentPoint = GameManager::instance()->otherPoint(currentPoint);
-	for (char x = 0; x < 19; x++) {
-		for (char y = 0; y < 19; y++) {
+	for (char x = 0; x < 6; x++) {
+		for (char y = 0; y < 6; y++) {
 			if (GameManager::goodInput(&grid, value, (y << 8) + x, mode, noDouble))
 			{
 				tmpPoint = currentPoint;
@@ -42,6 +42,7 @@ unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char 
 
 unsigned int BotHenry::getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth) const {
 	char val;
+    static int i =0;
 	std::map<unsigned short int, char> tmp;
 	unsigned int res, tmpRes = 0;
 
@@ -50,16 +51,19 @@ unsigned int BotHenry::getScore(std::map<unsigned short int, char> &grid, char v
 		return 999999;
 	if (oponentPoint >= 10)
 		return 0;
-	if (GameManager::instance()->checkBoard(&grid, GameManager::instance()->getEnding())) {
-		if (depth % 2 )
-			return 999999;
-		else
-			return 0;
-	}
-	GameManager::instance()->getPlayer(value).setStopUntilPlace().clear();
+	// if (GameManager::instance()->checkBoard(&grid, GameManager::instance()->getEnding())) {
+	// 	if (depth % 2)
+	// 		return 999999;
+	// 	else
+	// 		return 0;
+	// }
+	// GameManager::instance()->getPlayer(value).setStopUntilPlace().clear();
 	val = (depth % 2) ? 3 - value : value;
-	for (char x = 0; x < 19; x++) {
-		for (char y = 0; y < 19; y++) {
+    if(depth > 0)
+        std::cout << "depth: " << (int)depth << " i:" << i << std::endl;    
+    i++;
+	for (char x = 0; x < 2; x++) {
+		for (char y = 0; y < 2; y++) {
 			if (GameManager::goodInput(&grid, val, (y << 8) + x, mode, noDouble))
 			{
 				tmp = grid;
@@ -67,9 +71,9 @@ unsigned int BotHenry::getScore(std::map<unsigned short int, char> &grid, char v
 				if (depth == 0) {
 					return Heuristic(grid, GameManager::instance()->getHistory(), value).run().getScore();
 				} else if (depth % 2) {
-				 	if ((tmpRes = getScore(tmp, val, mode, noDouble, currentPoint, oponentPoint + GameManager::capture(&grid, (y << 8) + x), MAX_DEPTH)) < res)
+				 	if ((tmpRes = getScore(tmp, val, mode, noDouble, currentPoint, oponentPoint + GameManager::capture(&grid, (y << 8) + x), depth)) < res)
 						res = tmpRes;
-			 	} else if ((tmpRes = getScore(tmp, val, mode, noDouble, currentPoint + GameManager::capture(&grid, (y << 8) + x), oponentPoint, MAX_DEPTH)) > res) {
+			 	} else if ((tmpRes = getScore(tmp, val, mode, noDouble, currentPoint + GameManager::capture(&grid, (y << 8) + x), oponentPoint, depth)) > res) {
 					res = tmpRes;
 				}
 			}
