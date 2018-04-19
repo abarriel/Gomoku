@@ -12,6 +12,7 @@ Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigne
 }
 
 unsigned int Heuristic::getScore() const { return this->score; }
+Heuristic::playerData Heuristic::getPlayerdata(int i) const { return this->p[i]; }
 
 Heuristic& Heuristic::run() {
 	(void)this->id;
@@ -23,19 +24,20 @@ Heuristic& Heuristic::run() {
 
 void Heuristic::deductScore() {
 	int oponent = (3 - this->id) - 1;
+	int me = this->id - 1;
 
 	this->score = 0;
 	if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)
 		this->score = 0;
-	if (this->p[this->id - 1].fourFree > 0)
-		this->score = 999999;
+	if (this->p[me].fourFree > 0)
+		this->score = 10000;
 	else if (this->p[oponent].threeFree > 0)
 		this->score = 0;
-	else if (this->p[this->id - 1].fourHalf + this->p[this->id - 1].threeFree > 1)
-		this->score = 999999;
+	else if (this->p[me].fourHalf + this->p[me].threeFree > 1)
+		this->score = 10000;
 	else {
-		this->score += this->p[this->id - 1].threeHalf;
-		this->score += this->p[this->id - 1].fourHalf + this->p[this->id - 1].threeFree * 5;
+		this->score += this->p[me].threeHalf;
+		this->score += this->p[me].fourHalf + this->p[me].threeFree * 5;
 		this->score += 1000 - this->p[oponent].threeHalf;
 	}
 }
@@ -106,11 +108,10 @@ void Heuristic::countLine( void ) {
 	}
 }
 
-// std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) {
-// 	Heuristic() = i; // delete this SHIT AND ADD FU..... USE OF I
-// 	std::cout << "Some information from Heuristic instance" << std::endl;
-// 	return o;
-// }
+std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) {
+	std::cout << "Heuristic score :" << i.getScore() << " fourFreplayer one :" << i.getPlayerdata(0).threeFree;
+	return o;
+}
 
 /*
 

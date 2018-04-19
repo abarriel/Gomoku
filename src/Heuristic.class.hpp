@@ -21,6 +21,7 @@ class Heuristic {
 		Heuristic( std::map<unsigned short int, char> &grid, std::stack<unsigned short int> &history, char id );
 		virtual ~Heuristic( void );
 
+		Heuristic::playerData getPlayerdata(int i) const;
 		unsigned int getScore() const;
 		Heuristic& run( void );
 
@@ -41,6 +42,6 @@ class Heuristic {
 
 };
 
-// std::ostream &	operator<<( std::ostream & o, Heuristic const & i );
+ std::ostream &	operator<<( std::ostream & o, Heuristic const & i );
 
 #endif
