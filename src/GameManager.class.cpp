@@ -105,7 +105,7 @@ unsigned short int GameManager::threeTurn(APlayer *player, SDLManager *SDLMan) {
 bool GameManager::cantContinue() {
 	for (unsigned short int x = 0; x < 19; x++) {
 		for (unsigned short int y = 0; y < 19; y++) {
-			if (goodInput(&this->grid, ((this->turn + 1) % 2) + 1, y * 256 + x, 0, this->noDoubleThrees))
+			if (goodInput(this->grid, ((this->turn + 1) % 2) + 1, y * 256 + x, 0, this->noDoubleThrees))
 				return (false);
 		}
 	}
@@ -161,7 +161,6 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 		this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, this->gameMode, this->noDoubleThrees ));
 	else {
 		this->history->push(place = player->play( this->grid, ((this->turn + 1) % 2) + 1, 0, this->noDoubleThrees ));
-        player->setStopUntilPlace().clear();
     }
 	if (!skipPlace)
 		this->grid[place] = ((this->turn + 1) % 2) + 1;
@@ -196,38 +195,37 @@ APlayer& GameManager::getPlayer(char which) {
 
 char GameManager::capture(std::map<unsigned short int, char> *grid, unsigned short int place) {
 	char res = 0;
-	Vec Vplace = UsiToVec(place);
 
-	res += checkCapture(grid, Vplace, Vec(1, 0));
-	res += checkCapture(grid, Vplace, Vec(1, 1));
-	res += checkCapture(grid, Vplace, Vec(0, 1));
-	res += checkCapture(grid, Vplace, Vec(-1, 1));
-	res += checkCapture(grid, Vplace, Vec(1, -1));
-	res += checkCapture(grid, Vplace, Vec(0, -1));
-	res += checkCapture(grid, Vplace, Vec(-1, -1));
-	res += checkCapture(grid, Vplace, Vec(-1, 0));
+    res += checkCapture(grid, place, 256);
+	res += checkCapture(grid, place, 255);
+	res += checkCapture(grid, place, 257);
+	res += checkCapture(grid, place, 65535);
+	res += checkCapture(grid, place, 1);
+	res += checkCapture(grid, place, 0xFF00);
+	res += checkCapture(grid, place, 0xFF01);
+	res += checkCapture(grid, place, 0xFEFF);
 	return res;
 }
 
-char GameManager::checkCapture(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
-	Vec tmp = place + dir * 3;
+char GameManager::checkCapture(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir) {
+	unsigned short tmp = place + dir * 3;
 
-	if (tmp.x < 0 || tmp.x > 18 || tmp.y < 0 || tmp.y > 18 ||
-		(*grid)[VecToUsi(tmp)] != (*grid)[VecToUsi(place)] ||
-		3 - (*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir)] ||
-		3 - (*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 2)]
+	if ((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 || (tmp >> 8) < 0 || (tmp >> 8) > 18 ||
+		(*grid)[tmp] != (*grid)[place] ||
+		3 - (*grid)[place] != (*grid)[place + dir] ||
+		3 - (*grid)[place] != (*grid)[place + dir * 2]
 	)
 		return 0;
-	(*grid)[VecToUsi(place + dir)] = 0;
-	(*grid)[VecToUsi(place + dir * 2)] = 0;
+	(*grid)[place + dir] = 0;
+	(*grid)[place + dir * 2] = 0;
 	return 2;
 }
 
-unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, Vec from, Vec to, Vec dir, char value, Vec skip) {
+unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char>&grid, Vec from, Vec to, Vec dir, char value, Vec skip) {
     return (GameManager::SeqFromTo(grid, VecToUsi(from), VecToUsi(to), VecToUsi(dir), value, VecToUsi(skip)));
 }
 
-unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char> grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip) {
+unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char>&grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip) {
 	unsigned short int res;
 
 	res = 0;
@@ -272,36 +270,35 @@ char GameManager::SeqIsThree(unsigned short int seq) {
 	return 0;
 }
 
-bool GameManager::doubleThrees(std::map<unsigned short, char> *grid, unsigned short int place, char value) {
+bool GameManager::doubleThrees(std::map<unsigned short, char>&grid, unsigned short int place, char value) {
 	unsigned short int seq;
-	Vec Vplace = UsiToVec(place);
-	Vec dir = Vec(1, 0);
+    unsigned short dir = 256;
 	char res = 0;
 
-	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	seq = SeqFromTo(grid, place - dir * 4, place + dir * 4, dir, value, place);
 	res += SeqIsThree(seq);
-	dir = Vec(0, 1);
-	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	dir = 1;
+	seq = SeqFromTo(grid, place - dir * 4, place + dir * 4, dir, value, place);
 	res += SeqIsThree(seq);
-	dir = Vec(1, 1);
-	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	dir = 257;
+	seq = SeqFromTo(grid, place - dir * 4, place + dir * 4, dir, value, place);
 	res += SeqIsThree(seq);
-	dir = Vec(-1, 1);
-	seq = SeqFromTo(*grid, Vplace - dir * 4, Vplace + dir * 4, dir, value, Vplace);
+	dir = 255;
+	seq = SeqFromTo(grid, place - dir * 4, place + dir * 4, dir, value, place);
 	res += SeqIsThree(seq);
 	if (res > 1)
 		return 1;
 	return 0;
 }
 
-bool GameManager::goodInput(std::map<unsigned short, char> *grid, char value, unsigned short int pos, char mode, bool noDouble = true) {
+bool GameManager::goodInput(std::map<unsigned short, char> &grid, char value, unsigned short int pos, char mode, bool noDouble = true) {
 	if (mode & 2) {
 		Vec tmp = UsiToVec(pos);
 		if (tmp.x >= (7 - (mode & 1)) && tmp.y >= (7 - (mode & 1)) &&
 			tmp.x <= (11 + (mode & 1)) && tmp.y <= (11 + (mode & 1)))
 			return false;
 	}
-	if ((*grid)[pos] != 0 || (noDouble && doubleThrees(grid, pos, value)))
+	if ((grid)[pos] != 0 || (noDouble && doubleThrees(grid, pos, value)))
 		return false;
 	return true;
 }
@@ -311,69 +308,100 @@ char GameManager::checkBoard(std::map<unsigned short int, char> *grid, bool endi
 
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
-			res = this->checkFive(grid, Vec(x, y), Vec(1, 0), ending);
-			res += this->checkFive(grid, Vec(x, y), Vec(0, 1), ending);
-			res += this->checkFive(grid, Vec(x, y), Vec(1, 1), ending);
-			res += this->checkFive(grid, Vec(x, y), Vec(1, -1), ending);
-            if (res)
+            if ((res = checkFive(grid, (y << 8) + x, 256, ending)))
+                return res;
+            if ((res = checkFive(grid, (y << 8) + x, 1, ending)))
+                return res;
+            if ((res = checkFive(grid, (y << 8) + x, 257, ending)))
+                return res;
+            if ((res = checkFive(grid, (y << 8) + x, 255, ending)))
                 return res;
 		}
 	}
 	return res;
 }
 
-char GameManager::checkFive(std::map<unsigned short int, char> *grid, Vec place, Vec dir, bool ending = true) {
-	Vec tmp = place + dir * 4;
-    std::list<unsigned short> checkBeEat;
-    std::list<unsigned short> res;
+char GameManager::checkPosVictory(std::map<unsigned short int, char> *grid, unsigned short pos, bool ending = true) {
+	char res = 0;
 
-	if ((*grid)[VecToUsi(place)] == 0)
-		return 0;
-    checkBeEat = canBeEat(grid, place);
-    for (int i = 1; i <= 4; i++) {
-        res = canBeEat(grid, place + dir * i);
-        checkBeEat.merge(res);
-    }
-    if(!checkBeEat.empty() && !ending)
-        checkBeEat.clear();
-	if (tmp.x < 0 || tmp.x > 18 || tmp.y < 0 || tmp.y > 18 ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(tmp)] ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir)] ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 2)] ||
-		(*grid)[VecToUsi(place)] != (*grid)[VecToUsi(place + dir * 3)]) {
-            return 0;
-        }
-    if (!checkBeEat.empty())
-    {
-        if ((*grid)[VecToUsi(place)] == 1) // PLAYER 1
-            this->PlayerTwo->setStopUntilPlace() = checkBeEat;
-        else if ((*grid)[VecToUsi(place)] == 2) // PLAYER 1
-            this->PlayerOne->setStopUntilPlace() = checkBeEat;
-        return 0;
-    }
-	return (*grid)[VecToUsi(place)];
+    if ((res = checkFiveRe(grid, pos, 256, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 1, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 257, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 255, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 0xFF00, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 0xFF01, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 0xFEFF, ending)))
+        return res;
+    if ((res = checkFiveRe(grid, pos, 0xFFFF, ending)))
+        return res;
+    return 0;
 }
 
-std::list<unsigned short> GameManager::canBeEat(std::map<unsigned short, char> *grid, Vec place) {
-    std::list<unsigned short> nextEnnemyPos;
-    // res = false;
-    for (int xe = 1; xe >= -1; xe--)
-        for (int ye = 1; ye >= -1; ye--) {
-            if ((xe == 0 && ye == 0)) continue;
-            unsigned short res = checkEat(grid, place, Vec(xe, ye));
-            if (res == 0) continue;
-            nextEnnemyPos.push_back(res - 1);
-        }
-	return nextEnnemyPos;
+char GameManager::checkFiveRe(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, bool ending = true) {
+	unsigned short tmp;
+
+	if ((*grid)[place] == 0)
+		return 0;
+    while ((*grid)[place] == (*grid)[place - dir])
+        place = place - dir;
+    tmp = place + dir * 4;
+	if ((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 ||(tmp >> 8) < 0 || (tmp >> 8) > 18 ||
+		(*grid)[place] != (*grid)[tmp] ||
+		(*grid)[place] != (*grid)[place + dir] ||
+		(*grid)[place] != (*grid)[place + dir * 2] ||
+		(*grid)[place] != (*grid)[place + dir * 3] || ((
+		canBeEat(grid, place) || canBeEat(grid, place + dir) || canBeEat(grid, tmp) ||
+		canBeEat(grid, place + dir * 2) || canBeEat(grid, place + dir * 3)) && ending)
+	)
+		return 0;
+	return (*grid)[place];
 }
 
-unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *grid, Vec place, Vec dir) {
-	if ((*grid)[VecToUsi(place + dir)] != (*grid)[VecToUsi(place)]) // pas de moi dans la direction
+char GameManager::checkFive(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, bool ending = true) {
+	unsigned short tmp = place + dir * 4;
+
+	if ((*grid)[place] == 0)
 		return 0;
-	if ((*grid)[VecToUsi(place + dir * 2)] == 0 && (*grid)[VecToUsi(place - dir)] == 3 - (*grid)[VecToUsi(place)]) // 2 1(*) 1 0
-	 	return ((VecToUsi(place + dir * 2)) + 1);
-    if ((*grid)[VecToUsi(place + dir * 2)] == 3 - (*grid)[VecToUsi(place)] && (*grid)[VecToUsi(place - dir)] == 0) // 0 1(*) 1 2
-        return ((VecToUsi(place - dir)) + 1);
+	if ((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 ||(tmp >> 8) < 0 || (tmp >> 8) > 18 ||
+		(*grid)[place] != (*grid)[tmp] ||
+		(*grid)[place] != (*grid)[place + dir] ||
+		(*grid)[place] != (*grid)[place + dir * 2] ||
+		(*grid)[place] != (*grid)[place + dir * 3] || ((
+		canBeEat(grid, place) || canBeEat(grid, place + dir) || canBeEat(grid, tmp) ||
+		canBeEat(grid, place + dir * 2) || canBeEat(grid, place + dir * 3)) && ending)
+	)
+		return 0;
+	return (*grid)[place];
+}
+
+bool GameManager::canBeEat(std::map<unsigned short, char> *grid, unsigned short place) {
+	bool res;
+
+	res = false;
+	res += checkEat(grid, place, 256);
+	res += checkEat(grid, place, 255);
+	res += checkEat(grid, place, 257);
+	res += checkEat(grid, place, 65535);
+	res += checkEat(grid, place, 1);
+	res += checkEat(grid, place, 0xFF00);
+	res += checkEat(grid, place, 0xFF01);
+	res += checkEat(grid, place, 0xFEFF);
+	return res;
+}
+
+unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir) {
+	if ((*grid)[place + dir] != (*grid)[place]) // pas de moi dans la direction
+		return 0;
+	if ((*grid)[place + dir * 2] == 0 && (*grid)[place - dir] == 3 - (*grid)[place]) // 2 1(*) 1 0
+        return 1;
+    if ((*grid)[place + dir * 2] == 3 - (*grid)[place] && (*grid)[place - dir] == 0) // 0 1(*) 1 2
+        return 1;
 	return 0;
 }
 GameManager *GameManager::instance(bool d) { /* singleton */

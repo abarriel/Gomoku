@@ -21,7 +21,7 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
 		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
 	    	throw std::exception();
         nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
-        if (this->goodInput(&grid, value, &event, mode, noDouble) && this->checkForceToPlace(nextMove))
+        if (this->goodInput(&grid, value, &event, mode, noDouble))
                 break ;
 	}
     std::cout << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
@@ -77,7 +77,7 @@ bool Human::goodInput(std::map<unsigned short, char> *grid, char value, SDL_Even
 		event->button.x <= 1075 && event->button.y <= 1075)
 	{
 		pos = ((event->button.x - 125) / 50) + ((event->button.y - 125) / 50) * 256;
-		return GameManager::goodInput(grid, value, pos, mode, noDouble);
+		return GameManager::goodInput(*grid, value, pos, mode, noDouble);
 	}
 	return false;
 }

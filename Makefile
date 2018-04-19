@@ -2,7 +2,7 @@ NAME = Gomoku
 
 # COMPILATION
 CC = clang++
-CCFLAGS = -Wall -Werror -Wextra 
+CCFLAGS = -Wall -Werror -Wextra -std=c++0x -pthread
 
 LNK = clang++
 LNKFLAGS =
