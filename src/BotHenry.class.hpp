@@ -16,7 +16,7 @@ class BotHenry : public APlayer{
 		BotHenry( void );
 		virtual ~BotHenry( void );
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
-		unsigned int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth);
+		unsigned int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth) const;
 
 
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const;

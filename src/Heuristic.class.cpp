@@ -13,15 +13,16 @@ Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigne
 
 unsigned int Heuristic::getScore() const { return this->score; }
 
-void Heuristic::run() {
+Heuristic& Heuristic::run() {
 	(void)this->id;
 	(void)this->history;
 	this->countLine();
 	this->deductScore();
+    return *this;
 }
 
 void Heuristic::deductScore() {
-	char oponent = (3 - this->id) - 1;
+	int oponent = (3 - this->id) - 1;
 
 	this->score = 0;
 	if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)

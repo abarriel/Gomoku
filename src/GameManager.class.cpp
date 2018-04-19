@@ -56,7 +56,7 @@ GameManager::GameManager( bool asking ) :
 	return;
 }
 
-std::stack<unsigned short int> const &GameManager::getHistory() const {
+std::stack<unsigned short int> &GameManager::getHistory() const {
         return *this->history;
 }
 
@@ -189,8 +189,8 @@ bool GameManager::getEnding( void ) {
 }
 APlayer& GameManager::getPlayer(char which) {
 	if (which == 1)
-		return this->PlayerOne;
-	return this->PlayerTwo;
+		return *this->PlayerOne;
+	return *this->PlayerTwo;
 }
 
 char GameManager::capture(std::map<unsigned short int, char> *grid, unsigned short int place) {

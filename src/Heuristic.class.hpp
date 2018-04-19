@@ -22,7 +22,7 @@ class Heuristic {
 		virtual ~Heuristic( void );
 
 		unsigned int getScore() const;
-		void run( void );
+		Heuristic& run( void );
 
 		void countLine( void );
 

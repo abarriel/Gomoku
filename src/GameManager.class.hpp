@@ -25,7 +25,7 @@ class GameManager {
 		void twoTurn(APlayer *player, SDLManager *SDLMan);
 		bool cantContinue( void );
 
-		std::stack<unsigned short int> const &getHistory( void ) const;
+		std::stack<unsigned short int> &getHistory( void ) const;
 
 		bool getEnding( void );
 		char otherPoint(char o);
