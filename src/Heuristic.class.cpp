@@ -109,7 +109,12 @@ void Heuristic::countLine( void ) {
 }
 
 std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) {
-	std::cout << "Heuristic score :" << i.getScore() << " fourFreplayer one :" << i.getPlayerdata(0).threeFree;
+	std::cout << "score: " << i.getScore() << " P1 ->" << std::endl; 
+    std::cout << "\t3half: " << i.getPlayerdata(0).threeHalf << " 3free: " <<	i.getPlayerdata(0).threeFree;
+    std::cout << "\t4half: " << i.getPlayerdata(0).fourHalf << " 4free: " <<	i.getPlayerdata(0).fourFree;
+    // std::cout << "P2 ->" << std::endl;
+    // std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree;
+    // std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree;
 	return o;
 }
 
