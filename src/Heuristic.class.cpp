@@ -27,9 +27,13 @@ void Heuristic::deductScore() {
 	int me = this->id - 1;
 
 	this->score = 0;
-	if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)
+	if (this->p[oponent].five > 0)
 		this->score = 0;
-	if (this->p[me].fourFree > 0)
+	else if (this->p[me].five > 0)
+		this->score = 10000;
+	else if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)
+		this->score = 0;
+	else if (this->p[me].fourFree > 0)
 		this->score = 10000;
 	else if (this->p[oponent].threeFree > 0)
 		this->score = 0;
@@ -37,6 +41,7 @@ void Heuristic::deductScore() {
 		this->score = 10000;
 	else {
 		this->score += this->p[me].threeHalf;
+		this->score += this->p[me].fourHalf;
 		this->score += this->p[me].fourHalf + this->p[me].threeFree * 5;
 		this->score += 1000 - this->p[oponent].threeHalf;
 	}
@@ -56,12 +61,16 @@ void Heuristic::seqToLine(unsigned short cur, unsigned short dir) {
 		this->p[this->grid[cur] - 1].fourHalf++;
 	else if(res == 4)
 		this->p[this->grid[cur] - 1].fourFree++;
+	else if(res == 5)
+		this->p[this->grid[cur] - 1].five++;
 }
 
 char Heuristic::deductLine(unsigned short seq) {
     if (((seq | 0xF0FF) == 0xF4FF) || ((seq | 0xFCFF) == 0xFDFF)) {
         return 0;
     }
+	if ((seq | 0xFF00) == 0xFF55)
+		return 5;
 	if ((seq | 0xFF0F) == 0xFF5F) {
 		if ((seq | 0xFC00) == 0xFC54 ) {
 			return 4;
@@ -109,12 +118,15 @@ void Heuristic::countLine( void ) {
 }
 
 std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) {
-	std::cout << "score: " << i.getScore() << " P1 ->" << std::endl; 
-    std::cout << "\t3half: " << i.getPlayerdata(0).threeHalf << " 3free: " <<	i.getPlayerdata(0).threeFree;
-    std::cout << "\t4half: " << i.getPlayerdata(0).fourHalf << " 4free: " <<	i.getPlayerdata(0).fourFree;
-    // std::cout << "P2 ->" << std::endl;
-    // std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree;
-    // std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree;
+	std::cout << "score: " << i.getScore() << std::endl;
+	std::cout << " P1 ->" << std::endl;
+    std::cout << "\t3half: " << i.getPlayerdata(0).threeHalf << " 3free: " <<	i.getPlayerdata(0).threeFree << std::endl;
+	std::cout << "\t4half: " << i.getPlayerdata(0).fourHalf << " 4free: " <<	i.getPlayerdata(0).fourFree << std::endl;
+    std::cout << "\tfive: " << i.getPlayerdata(0).five << std::endl;
+    std::cout << " P2 ->" << std::endl;
+    std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree << std::endl;
+	std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree << std::endl;
+    std::cout << "\tfive: " << i.getPlayerdata(1).five << std::endl;
 	return o;
 }
 

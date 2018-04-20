@@ -3,9 +3,9 @@
 GameManager *GameManager::p_instance = 0;
 GameManager::GameManager( bool asking ) :
 	turn(1),
-	canCapture(true),
-	endingCapture(true),
-	noDoubleThrees(true),
+	canCapture(false),
+	endingCapture(false),
+	noDoubleThrees(false),
 	gameMode(0),
 	swapOportunity(false)
 {
@@ -190,7 +190,7 @@ void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
                 std::cout << "\033[1;31m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
             else if ((int)grid[x * 256 + y] == 2)
                 std::cout << "\033[1;32m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
-            else 
+            else
                 std::cout << (int)grid[x * 256 + y] << " ";
 		}
         std::cout << std::endl;
@@ -208,7 +208,7 @@ void GameManager::debugGrid(void) {
                 std::cout << "\033[1;31m" << (int)this->grid[x * 256 + y] << "\033[0m" << " ";
             else if ((int)this->grid[x * 256 + y] == 2)
                 std::cout << "\033[1;32m" << (int)this->grid[x * 256 + y] << "\033[0m" << " ";
-            else 
+            else
                 std::cout << (int)this->grid[x * 256 + y] << " ";
 		}
         std::cout << std::endl;

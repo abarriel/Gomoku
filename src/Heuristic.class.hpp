@@ -15,6 +15,8 @@ class Heuristic {
 
 		unsigned short fourFree;
 		unsigned short fourHalf;
+
+		unsigned short five;
 	};
 
 	public:
