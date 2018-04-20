@@ -180,6 +180,42 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 	return 0;
 }
 
+void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
+    std::cout << "=================== DEBUG GRID ================" << std::endl;
+    std::cout << "   : 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8" << std::endl;
+    for (char x = 0; x < 19; x++) {
+        std::cout << std::setw(2) << (int)x << " : ";
+		for (char y = 0; y < 19; y++) {
+            if ((int)grid[x * 256 + y] == 1)
+                std::cout << "\033[1;31m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
+            else if ((int)grid[x * 256 + y] == 2)
+                std::cout << "\033[1;32m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
+            else 
+                std::cout << (int)grid[x * 256 + y] << " ";
+		}
+        std::cout << std::endl;
+    }
+    std::cout << "=================== END GRID ================" << std::endl;
+}
+
+void GameManager::debugGrid(void) {
+    std::cout << "=================== DEBUG GRID ================" << std::endl;
+    std::cout << "   : 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8" << std::endl;
+    for (char x = 0; x < 19; x++) {
+        std::cout << std::setw(2) << (int)x << " : ";
+		for (char y = 0; y < 19; y++) {
+            if ((int)this->grid[x * 256 + y] == 1)
+                std::cout << "\033[1;31m" << (int)this->grid[x * 256 + y] << "\033[0m" << " ";
+            else if ((int)this->grid[x * 256 + y] == 2)
+                std::cout << "\033[1;32m" << (int)this->grid[x * 256 + y] << "\033[0m" << " ";
+            else 
+                std::cout << (int)this->grid[x * 256 + y] << " ";
+		}
+        std::cout << std::endl;
+    }
+    std::cout << "=================== END GRID ================" << std::endl;
+}
+
 char GameManager::otherPoint(char o) {
 	if (this->PlayerOne->getPoint() == o)
 		return this->PlayerTwo->getPoint();

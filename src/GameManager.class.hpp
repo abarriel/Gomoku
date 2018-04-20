@@ -7,6 +7,7 @@
 # include <algorithm>
 # include <stack>
 # include <string>
+#include <iomanip>
 
 # include "SDLManager.class.hpp"
 # include "APlayer.class.hpp"
@@ -39,7 +40,8 @@ class GameManager {
 		static GameManager *instance(bool = true);
         static char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
         static char checkPosVictory(std::map<unsigned short int, char> *grid, unsigned short pos, bool ending);
-    
+        void debugGrid(void);
+        static void debugGrid(std::map<unsigned short int, char> &grid);
 	private:
 
 		std::map<unsigned short int, char> grid;
