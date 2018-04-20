@@ -18,7 +18,7 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
-		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
 	    	throw std::exception();
         nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
         if (this->goodInput(&grid, value, &event, mode, noDouble))
