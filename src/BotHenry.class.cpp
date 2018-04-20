@@ -54,8 +54,29 @@ void do_join(std::thread& t)
 // 	return resT.res;
 // }
 
+// unsigned int BotHenry::getFirstScore(resThread &resT, std::map<unsigned short int, char> grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth,  unsigned short cur)
+// {
+//     unsigned int tmpScore;
+//     if ((tmpScore = getScore(grid, value, mode, noDouble, currentPoint, oponentPoint, depth)) > resT.curScore) {
+//             resT.res = cur;
+//             resT.curScore = tmpScore;                    
+//     }
+//     return cur;
+// }
+
+bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned short value) {
+    if (grid[value] != 0)
+        return false;
+    for(char x = -2; x < 3; x++)
+        for(char y = -2; y < 3; y++) {
+            if (!(x == 0 && y == 0) && grid[value + x + 256 * y] != 0) 
+                return true;
+        }
+    return false;
+}
+
 unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
-	unsigned int curScore, tmpScore;
+	int curScore, tmpScore;
 	unsigned short int cur;
 	char currentPoint, tmpPoint, oponentPoint;
 	std::map<unsigned short int, char> tmp;
@@ -91,31 +112,10 @@ unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char 
 	return cur;
 }
 
-bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned short value) {
-    if (grid[value] != 0)
-        return false;
-    for(char x = -2; x < 3; x++)
-        for(char y = -2; y < 3; y++) {
-            if (!(x == 0 && y == 0) && grid[value + x + 256 * y] != 0) 
-                return true;
-        }
-    return false;
-}
-
-unsigned int BotHenry::getFirstScore(resThread &resT, std::map<unsigned short int, char> grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth,  unsigned short cur)
-{
-    unsigned int tmpScore;
-    if ((tmpScore = getScore(grid, value, mode, noDouble, currentPoint, oponentPoint, depth)) > resT.curScore) {
-            resT.res = cur;
-            resT.curScore = tmpScore;                    
-    }
-    return cur;
-}
-
-unsigned int BotHenry::getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth) {
+int BotHenry::getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth) {
 	char val;
 	std::map<unsigned short int, char> tmp;
-	unsigned int res, tmpRes;
+	int res, tmpRes;
     bool firstInst = true;
     
 	depth--;

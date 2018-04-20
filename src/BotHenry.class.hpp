@@ -12,7 +12,7 @@
 # define MAX_DEPTH 2      // need to be even
 
 struct resThread{
-    unsigned int curScore;
+    int curScore;
     unsigned short res;
 };
 
@@ -23,7 +23,7 @@ class BotHenry : public APlayer{
 		BotHenry( void );
 		virtual ~BotHenry( void );
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
-		static unsigned int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth);
+		static int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth);
 		static unsigned int getFirstScore(resThread &restT, std::map<unsigned short int, char> grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth,  unsigned short cur);
         static bool getSquare(std::map<unsigned short int, char> &grid, unsigned short value);
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const;
