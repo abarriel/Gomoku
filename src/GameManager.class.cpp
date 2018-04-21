@@ -168,7 +168,7 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 		player->increasePoint(capture(&this->grid, place));
 	this->printGrid(SDLMan);
 	SDLMan->render();
-    std::cout << Heuristic(grid, GameManager::instance()->getHistory(), 2).run() << std::endl ;
+    std::cout << Heuristic(grid, GameManager::instance()->getHistory(), 2, 0).run() << std::endl ;
 
 	if (player->haveWin() || checkBoard(&this->grid, this->endingCapture)) {
 		player->victory();
