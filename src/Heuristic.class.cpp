@@ -5,13 +5,16 @@ Heuristic::~Heuristic( void ) {
 	return;
 }
 
-Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigned short int> &hi, char id, bool onPlay ) : grid(gr), history(hi), id(id), onPlay(onPlay), score(0)
+Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigned short int> &hi, char id, bool onPlay ) : grid(gr), history(hi), id(id), onPlay(!onPlay), nbUsless(0), score(0)
 {
 	bzero(this->p, sizeof(Heuristic::playerData) * 2);
 	return;
 }
 
-unsigned int Heuristic::getScore() const { return this->score; }
+int Heuristic::getScore() const { 
+    // if (score < 0)
+        // std::cout << "VACCCCCCCCCCHHHHHHHHHHHHHEEEE" << std::endl;
+    return this->score; }
 Heuristic::playerData Heuristic::getPlayerdata(int i) const { return this->p[i]; }
 
 Heuristic& Heuristic::run() {
@@ -23,29 +26,61 @@ Heuristic& Heuristic::run() {
     return *this;
 }
 
+int Heuristic::linePoint(int firInPlay, int secInPlay) {
+	int res = 0;
+
+	if (this->p[firInPlay].five > 0)
+		return 20001;
+	else if (this->p[secInPlay].five > 0)
+		return -20002;
+	else if (this->p[firInPlay].fourFree > 0)
+		return 22000;
+	else if (this->p[firInPlay].fourHalf > 0)
+		return 20000;
+	else if (this->p[secInPlay].fourFree > 0)
+		return -15000;
+	else if (this->p[firInPlay].threeFree && (this->p[secInPlay].fourHalf == 0))
+		return 10000;
+	else if (this->p[secInPlay].fourHalf + this->p[secInPlay].threeFree > 1)
+		return -18000;
+	else {
+
+		res += this->p[firInPlay].threeFree * 15;
+		res -= this->p[secInPlay].fourFree * 10;
+		res -= this->p[secInPlay].fourHalf * 8;
+		res -= this->p[secInPlay].threeFree * 4;
+	}
+	return res;
+}
+
 void Heuristic::deductScore() {
 	int oponent = (3 - this->id) - 1;
 	int me = this->id - 1;
 
-	this->score = 0;
-	if (this->p[oponent].five > 0)
-		this->score = 0;
-	else if (this->p[me].five > 0)
-		this->score = 10000;
-	else if (this->p[oponent].fourFree > 0)
-		this->score = 0;
-	else if (this->p[me].fourFree + this->p[me].fourHalf > 0)
-		this->score = 10000;
-	else if (this->p[oponent].threeFree + this->p[oponent].fourHalf > 0)
-		this->score = 0;
-	else if (this->p[me].threeFree > 1)
-		this->score = 10000;
-	else {
-		this->score += this->p[me].threeHalf;
-		this->score += this->p[me].fourHalf;
-		this->score += this->p[me].fourHalf + this->p[me].threeFree * 5;
-		this->score += 1000 - this->p[oponent].threeHalf;
-	}
+	this->score = 30000;
+	if (this->onPlay)
+		this->score += this->linePoint(me, oponent);
+	else
+		this->score -= this->linePoint(oponent, me);
+	this->score -= this->nbUsless;
+	// if (this->p[oponent].five + this->p[oponent].fourFree > 0)
+	// 	this->score = 0;
+	// else if (this->p[me].five + this->p[me].fourFree > 0)
+	// 	this->score = 10000;
+	// else if ((this->p[me].fourHalf + this->p[me].threeFree) && this->onPlay)
+	// 	this->score = 10000;
+	// else if ((this->p[oponent].fourHalf + this->p[oponent].threeFree) && !this->onPlay)
+	// 	this->score = 0;
+	// else if (this->p[oponent].threeFree + this->p[oponent].fourHalf > 0)
+	// 	this->score = 0;
+	// else if (this->p[me].threeFree > 1)
+	// 	this->score = 10000;
+	// else {
+	// 	this->score += this->p[me].threeHalf;
+	// 	this->score += this->p[me].fourHalf;
+	// 	this->score += this->p[me].fourHalf + this->p[me].threeFree * 5;
+	// 	this->score += 1000 - this->p[oponent].threeHalf;
+	// }
 }
 
 void Heuristic::seqToLine(unsigned short cur, unsigned short dir) {
@@ -66,6 +101,7 @@ void Heuristic::seqToLine(unsigned short cur, unsigned short dir) {
 		this->p[this->grid[cur] - 1].five++;
 }
 
+
 char Heuristic::deductLine(unsigned short seq) {
     if (((seq | 0xF0FF) == 0xF4FF) || ((seq | 0xFCFF) == 0xFDFF)) {
         return 0;
@@ -75,7 +111,7 @@ char Heuristic::deductLine(unsigned short seq) {
 	if ((seq | 0xFF0F) == 0xFF5F) {
 		if ((seq | 0xFC00) == 0xFC54 ) {
 			return 4;
-		} else if (((seq | 0xFF00) == 0xFC51) || ((seq | 0xFF00) == 0xFC54) || ((seq | 0xFC03) == 0xFC57)) {
+		} else if (((seq | 0xFF00) == 0xFF51) || ((seq | 0xFF00) == 0xFF54) || ((seq | 0xFC03) == 0xFC57)) {
 			return 3;
 		} else if (((seq | 0xFC00) == 0xFC50) || ((seq | 0xF003) == 0xF053)) {
 			return 2;
@@ -102,6 +138,27 @@ char Heuristic::deductLine(unsigned short seq) {
 	return 0;
 }
 
+int Heuristic::usless(unsigned short pos) {
+	int res = 0;
+	if (this->grid[pos + 1] == 0)
+		res++;
+	if (this->grid[pos - 1] == 0)
+		res++;
+	if (this->grid[pos - 256] == 0)
+		res++;
+	if (this->grid[pos + 256] == 0)
+		res++;
+	if (this->grid[pos - 255] == 0)
+		res++;
+	if (this->grid[pos + 255] == 0)
+		res++;
+	if (this->grid[pos - 257] == 0)
+		res++;
+	if (this->grid[pos + 257] == 0)
+		res++;
+	return res;
+}
+
 void Heuristic::countLine( void ) {
 	unsigned short cur;
 
@@ -113,6 +170,7 @@ void Heuristic::countLine( void ) {
 				this->seqToLine(cur, 256);
 				this->seqToLine(cur, 257);
 				this->seqToLine(cur, 255);
+				this->nbUsless += usless(cur);
 			}
 		}
 	}

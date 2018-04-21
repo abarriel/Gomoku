@@ -15,6 +15,7 @@ class SDLManager {
 		void placeRock(int color, Vec vec);
 		void placeRock(int color, unsigned short int point);
 		void render();
+		void clear();
 
 	private:
 

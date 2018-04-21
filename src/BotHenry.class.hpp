@@ -8,8 +8,9 @@
 # include "Heuristic.class.hpp"
 # include <chrono>
 # include <thread>
+#include <future>
 #include <vector>
-# define MAX_DEPTH 2 
+# define MAX_DEPTH 2
 
 struct resThread{
     int curScore;

@@ -20,11 +20,13 @@ class GameManager {
 	public:
 		GameManager(bool asking = true);
 		virtual ~GameManager( void );
+		void printGrid(SDLManager *SDLMan, std::map<unsigned short int, char> gridE);
 		void printGrid( SDLManager *SDLMan );
 		char playTurn( SDLManager *SDLMan );
 		unsigned short int threeTurn(APlayer *player, SDLManager *SDLMan);
 		void twoTurn(APlayer *player, SDLManager *SDLMan);
 		bool cantContinue( void );
+		void replay( SDLManager *SDLMan );
 
 		std::stack<unsigned short int> &getHistory( void ) const;
 
