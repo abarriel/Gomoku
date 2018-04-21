@@ -24,7 +24,7 @@ class Heuristic {
 		virtual ~Heuristic( void );
 
 		Heuristic::playerData getPlayerdata(int i) const;
-		unsigned int getScore() const;
+		int getScore() const;
 		Heuristic& run( void );
 
 		void countLine( void );
@@ -37,11 +37,15 @@ class Heuristic {
 		std::stack<unsigned short int> &history;
 		char id;
 		bool onPlay;
-		unsigned int score;
+		unsigned int nbUsless;
+		int score;
 		Heuristic::playerData p[2];
 
+		int usless(unsigned short pos);
+		int linePoint(int firInPlay, int secInPlay);
 		void seqToLine(unsigned short cur, unsigned short dir);
 		char deductLine(unsigned short seq);
+		char deductEat(unsigned short seq);
 
 };
 

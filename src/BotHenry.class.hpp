@@ -9,7 +9,7 @@
 # include <chrono>
 # include <thread>
 #include <vector>
-# define MAX_DEPTH 2 
+# define MAX_DEPTH 2
 
 struct resThread{
     int curScore;

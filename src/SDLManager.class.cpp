@@ -59,6 +59,11 @@ void SDLManager::placeRock(int color, unsigned short int point) {
 	}
 }
 
+void SDLManager::clear(){
+	SDL_RenderClear(this->MainRenderer);
+	SDL_RenderCopy(this->MainRenderer, this->Background, NULL, NULL);
+}
+
 void SDLManager::render() {
 	SDL_RenderPresent(this->MainRenderer);
 	SDL_RenderCopy(this->MainRenderer, this->Background, NULL, NULL);

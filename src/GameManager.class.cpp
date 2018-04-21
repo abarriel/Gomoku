@@ -5,7 +5,7 @@ GameManager::GameManager( bool asking ) :
 	turn(1),
 	canCapture(false),
 	endingCapture(false),
-	noDoubleThrees(false),
+	noDoubleThrees(true),
 	gameMode(0),
 	swapOportunity(false)
 {
@@ -71,6 +71,14 @@ void GameManager::printGrid(SDLManager *SDLMan) {
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			SDLMan->placeRock(this->grid[y * 256 + x], Vec(x, y));
+		}
+	}
+}
+
+void GameManager::printGrid(SDLManager *SDLMan, std::map<unsigned short int, char> gridE) {
+	for (char x = 0; x < 19; x++) {
+		for (char y = 0; y < 19; y++) {
+			SDLMan->placeRock(gridE[y * 256 + x], Vec(x, y));
 		}
 	}
 }
@@ -431,6 +439,31 @@ bool GameManager::canBeEat(std::map<unsigned short, char> *grid, unsigned short 
 	res += checkEat(grid, place, 0xFF01);
 	res += checkEat(grid, place, 0xFEFF);
 	return res;
+}
+
+void GameManager::replay( SDLManager *SDLMan ) {
+	std::stack<unsigned short int> tmp;
+	std::map<unsigned short int, char> griH;
+	SDL_Event event;
+	int tmpColor = 1;
+
+	while (!this->history->empty()) {
+		tmp.push(this->history->top());
+		this->history->pop();
+	}
+	SDLMan->clear();
+	SDLMan->render();
+	while (!tmp.empty()) {
+		SDL_WaitEvent(&event);
+		if (event.key.keysym.sym == SDLK_h && event.key.type == SDL_KEYDOWN) {
+			griH[tmp.top()] = tmpColor;
+			capture(&griH, tmp.top());
+			this->printGrid(SDLMan, griH);
+			SDLMan->render();
+			tmp.pop();
+			tmpColor = 3 - tmpColor;
+		}
+	}
 }
 
 unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir) {

@@ -22,6 +22,8 @@ int main( int argc, char const **argv )
 			if (GameMan->playTurn(SDLMan)) {
 				while (!quit) {
 					SDL_WaitEvent(&event);
+					if (event.key.keysym.sym == SDLK_h)
+						GameMan->replay(SDLMan);
 					if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
 		    			quit = true;
 				}
