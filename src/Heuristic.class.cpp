@@ -5,7 +5,7 @@ Heuristic::~Heuristic( void ) {
 	return;
 }
 
-Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigned short int> &hi, char id ) : grid(gr), history(hi), id(id), score(0)
+Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigned short int> &hi, char id, bool onPlay ) : grid(gr), history(hi), id(id), onPlay(onPlay), score(0)
 {
 	bzero(this->p, sizeof(Heuristic::playerData) * 2);
 	return;
@@ -31,13 +31,13 @@ void Heuristic::deductScore() {
 		this->score = 0;
 	else if (this->p[me].five > 0)
 		this->score = 10000;
-	else if (this->p[oponent].fourFree + this->p[oponent].fourHalf > 0)
+	else if (this->p[oponent].fourFree > 0)
 		this->score = 0;
-	else if (this->p[me].fourFree > 0)
+	else if (this->p[me].fourFree + this->p[me].fourHalf > 0)
 		this->score = 10000;
-	else if (this->p[oponent].threeFree > 0)
+	else if (this->p[oponent].threeFree + this->p[oponent].fourHalf > 0)
 		this->score = 0;
-	else if (this->p[me].fourHalf + this->p[me].threeFree > 1)
+	else if (this->p[me].threeFree > 1)
 		this->score = 10000;
 	else {
 		this->score += this->p[me].threeHalf;

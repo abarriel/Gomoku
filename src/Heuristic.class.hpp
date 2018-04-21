@@ -20,7 +20,7 @@ class Heuristic {
 	};
 
 	public:
-		Heuristic( std::map<unsigned short int, char> &grid, std::stack<unsigned short int> &history, char id );
+		Heuristic( std::map<unsigned short int, char> &grid, std::stack<unsigned short int> &history, char id, bool onPlay );
 		virtual ~Heuristic( void );
 
 		Heuristic::playerData getPlayerdata(int i) const;
@@ -36,6 +36,7 @@ class Heuristic {
 		std::map<unsigned short int, char> &grid;
 		std::stack<unsigned short int> &history;
 		char id;
+		bool onPlay;
 		unsigned int score;
 		Heuristic::playerData p[2];
 

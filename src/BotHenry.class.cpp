@@ -98,19 +98,13 @@ int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, char mo
 	if (oponentPoint >= 10)
         return 0;
 	if (depth == 0){
-		return Heuristic(grid, GameManager::instance()->getHistory(), value).run().getScore();
+		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
 	}
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			if (BotHenry::getSquare(grid, (y << 8) + x) && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
 				grid[(y << 8) + x] = value;
-				if (depth > 1)
-					std::cout << (y << 8) + x << '\n';
 				currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace);
-				if (depth == MAX_DEPTH) {
-					std::cout << "score : " << currentRating << '\n';
-					GameManager::debugGrid(grid);
-				}
 				if (currentRating >= v) {
 					v = currentRating;
 					pos = (y << 8) + x;
@@ -119,10 +113,10 @@ int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, char mo
 			}
 		}
 	}
-	if (depth > 1)
+	if (depth > 2)
 		std::cout << "Enemy have to play : " << (oponentPlace >> 8) << ", " << oponentPlace % 256 << " - " << oponentPlace << '\n';
-	if (depth > 1)
-		std::cout << "I have play : " << (pos >> 8) << ", " << pos % 256 << " - " << pos << '\n';
+	if (depth > 2)
+		std::cout << "I have play : " << (pos >> 8) << ", " << pos % 256 << " - " << pos << " for points: " << v << '\n';
 	return v;
 }
 
