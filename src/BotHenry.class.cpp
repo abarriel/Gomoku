@@ -79,7 +79,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
 	auto start = std::chrono::high_resolution_clock::now();
 	unsigned short res;
 
-	getScore(grid, value, mode, noDouble, this->getPoint(), GameManager::instance()->otherPoint(this->getPoint()), MAX_DEPTH, res);
+	getScore(grid, value, mode, noDouble, this->getPoint(), GameManager::instance()->otherPoint(this->getPoint()), MAX_DEPTH, res, INT_MIN, INT_MAX);
 	// int BotHenry::getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth) {
 
 	auto end = std::chrono::high_resolution_clock::now();
@@ -87,10 +87,10 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
 	return res;
 }
 
-int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos)
+int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, 
+char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta)
 {
 	int currentRating;
-	int v = -10000000;
 	unsigned short oponentPlace;
 
 	if (currentPoint >= 10)
@@ -104,10 +104,12 @@ int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, char mo
 		for (char y = 0; y < 19; y++) {
 			if (BotHenry::getSquare(grid, (y << 8) + x) && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
 				grid[(y << 8) + x] = value;
-				currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace);
-				if (currentRating >= v) {
-					v = currentRating;
+				currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
+				if (currentRating > alpha) {
+					alpha = currentRating;
 					pos = (y << 8) + x;
+                    if (alpha >= beta)
+                        break;
 				}
 				grid[(y << 8) + x] = 0;
 			}
@@ -116,8 +118,8 @@ int BotHenry::getScore(std::map<unsigned short, char> &grid, char value, char mo
 	if (depth > 2)
 		std::cout << "Enemy have to play : " << (oponentPlace >> 8) << ", " << oponentPlace % 256 << " - " << oponentPlace << '\n';
 	if (depth > 2)
-		std::cout << "I have play : " << (pos >> 8) << ", " << pos % 256 << " - " << pos << " for points: " << v << '\n';
-	return v;
+		std::cout << "I have play : " << (pos >> 8) << ", " << pos % 256 << " - " << pos << " for points: " << alpha << '\n';
+	return alpha;
 }
 
 // unsigned short int BotHenry::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {

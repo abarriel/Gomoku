@@ -2,8 +2,7 @@ NAME = minmax
 
 # COMPILATION
 CC = clang++
-CCFLAGS = -Wall -Werror -Wextra
-
+CCFLAGS =  -Wall -Wextra -std=c++0x -pthread 
 LNK = clang++
 LNKFLAGS =
 
