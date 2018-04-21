@@ -16,6 +16,7 @@ Heuristic::playerData Heuristic::getPlayerdata(int i) const { return this->p[i];
 
 Heuristic& Heuristic::run() {
 	(void)this->id;
+	(void)this->onPlay;
 	(void)this->history;
 	this->countLine();
 	this->deductScore();
