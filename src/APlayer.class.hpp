@@ -14,6 +14,7 @@ class APlayer {
 		APlayer( std::string nm );
 		APlayer( void );
 		virtual ~APlayer( void );
+		virtual unsigned short int debugPlay( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const = 0;
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble) const = 0;
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const = 0;
 		virtual bool wantDoublePlay( std::map<unsigned short int, char> grid ) const = 0;

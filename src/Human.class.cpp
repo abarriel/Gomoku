@@ -28,6 +28,22 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
 	return nextMove;
 }
 
+unsigned short int Human::debugPlay(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
+	SDL_Event event;
+	std::cout << "Human " << this->getName();
+    unsigned short nextMove;
+	while (1) {
+		SDL_WaitEvent(&event);
+		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
+	    	throw std::exception();
+        nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+        if (this->goodInput(&grid, value, &event, mode, noDouble))
+                break ;
+	}
+    std::cout << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
+	return nextMove;
+}
+
 bool Human::goodAwnser(SDL_Event *event) {
 	if (event->key.type == SDL_KEYDOWN &&
 		(event->key.keysym.scancode == SDL_SCANCODE_Y || event->key.keysym.scancode == SDL_SCANCODE_N) &&

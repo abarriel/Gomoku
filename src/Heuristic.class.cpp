@@ -11,7 +11,7 @@ Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigne
 	return;
 }
 
-int Heuristic::getScore() const { 
+int Heuristic::getScore() const {
     // if (score < 0)
         // std::cout << "VACCCCCCCCCCHHHHHHHHHHHHHEEEE" << std::endl;
     return this->score; }
@@ -40,13 +40,12 @@ int Heuristic::linePoint(int firInPlay, int secInPlay) {
 	else if (this->p[secInPlay].fourFree > 0)
 		return -15000;
 	else if (this->p[firInPlay].threeFree && (this->p[secInPlay].fourHalf == 0))
-		return 10000;
+		return 19000;
 	else if (this->p[secInPlay].fourHalf + this->p[secInPlay].threeFree > 1)
 		return -18000;
 	else {
-
 		res += this->p[firInPlay].threeFree * 15;
-		res -= this->p[secInPlay].fourFree * 10;
+		res -= this->p[secInPlay].fourFree * 18;
 		res -= this->p[secInPlay].fourHalf * 8;
 		res -= this->p[secInPlay].threeFree * 4;
 	}

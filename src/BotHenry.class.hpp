@@ -24,6 +24,7 @@ class BotHenry : public APlayer{
 		BotHenry( void );
 		virtual ~BotHenry( void );
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
+		virtual unsigned short int debugPlay( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
 		static int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta);
 		static unsigned int getFirstScore(resThread &restT, std::map<unsigned short int, char> grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth,  unsigned short cur);
         static bool getSquare(std::map<unsigned short int, char> &grid, unsigned short value);

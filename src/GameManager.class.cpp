@@ -445,6 +445,7 @@ void GameManager::replay( SDLManager *SDLMan ) {
 	std::stack<unsigned short int> tmp;
 	std::map<unsigned short int, char> griH;
 	SDL_Event event;
+	bool oneTwo = true;
 	int tmpColor = 1;
 
 	while (!this->history->empty()) {
@@ -457,11 +458,45 @@ void GameManager::replay( SDLManager *SDLMan ) {
 		SDL_WaitEvent(&event);
 		if (event.key.keysym.sym == SDLK_h && event.key.type == SDL_KEYDOWN) {
 			griH[tmp.top()] = tmpColor;
-			capture(&griH, tmp.top());
+			if (this->canCapture)
+				capture(&griH, tmp.top());
 			this->printGrid(SDLMan, griH);
 			SDLMan->render();
 			tmp.pop();
 			tmpColor = 3 - tmpColor;
+			oneTwo = !oneTwo;
+		}
+		if (event.key.keysym.sym == SDLK_j && event.key.type == SDL_KEYDOWN) {
+			std::cout << std::endl << "=========================================" << std::endl << std::endl;
+			std::cout << "Black player :" << std::endl;
+			std::cout << Heuristic(griH, GameManager::instance()->getHistory(), 1, oneTwo).run() << std::endl ;
+			std::cout << "White player :" << std::endl;
+			std::cout << Heuristic(griH, GameManager::instance()->getHistory(), 2, oneTwo).run() << std::endl ;
+		}
+		if (event.button.type == SDL_MOUSEBUTTONDOWN &&
+			event.button.button == SDL_BUTTON_LEFT &&
+			event.button.windowID == 1 &&
+			event.button.x >= 125 && event.button.y >= 125 &&
+			event.button.x <= 1075 && event.button.y <= 1075)
+		{
+			unsigned short pos = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+			griH[pos] = tmpColor;
+			if (this->canCapture)
+				capture(&griH, pos);
+			this->printGrid(SDLMan, griH);
+			SDLMan->render();
+			tmp.pop();
+			tmpColor = 3 - tmpColor;
+			oneTwo = !oneTwo;
+		}
+		if (event.key.keysym.sym == SDLK_g && event.key.type == SDL_KEYDOWN) {
+			APlayer *player;
+			if (oneTwo)
+				player = this->PlayerOne;
+			else
+				player = this->PlayerTwo;
+			unsigned short pos = player->debugPlay( griH, 2 - oneTwo, 0, this->noDoubleThrees );
+			std::cout << "(" << (pos >> 8) << ", " << (pos & 15) << ")" << std::endl;
 		}
 	}
 }

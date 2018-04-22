@@ -17,9 +17,12 @@ int main( int argc, char const **argv )
 		GameMan = GameManager::instance(true);
 	SDLMan = new SDLManager();
 	SDLMan->render();
+	auto start = std::chrono::high_resolution_clock::now();
 	while(!quit) {
 		try {
 			if (GameMan->playTurn(SDLMan)) {
+				auto end = std::chrono::high_resolution_clock::now();
+				std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms for the entiere game\n";
 				while (!quit) {
 					SDL_WaitEvent(&event);
 					if (event.key.keysym.sym == SDLK_h)
