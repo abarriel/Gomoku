@@ -84,123 +84,109 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
 			if (BotHenry::getSquare(grid, (y << 8) + x)
                 && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
                 bestMoveScore = 0;
-            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl;               
-                //  BotHenry::popScore(grid, (y << 8) + x, 256, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 255, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 257, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 65535, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 1, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFF00, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFF01, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFEFF, bestMoveScore);
-                grid[(y << 8) + x] = value;                
-                bestMoveScore = Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
-                grid[(y << 8) + x] = 0;
-            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
-                //  if (bestMoveScore) {
+	            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl;
+                 BotHenry::popScore(grid, (y << 8) + x, 256, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 255, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 257, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 65535, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 1, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFF00, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFF01, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFEFF, bestMoveScore);
+
+				// grid[(y << 8) + x] = value;
+                // bestMoveScore = Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+                // grid[(y << 8) + x] = 0;
+
+				// std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
+                 if (bestMoveScore) {
                     // moves.push_back((bestMoveScore << 16) + ((y << 8) + x));
                     moves.insert(std::upper_bound(moves.begin(), moves.end(), (bestMoveScore << 16) + ((y << 8) + x), [](const int& lhs, const int& rhs ) {
                          return ((lhs >> 16) > (rhs >> 16));
                     }), (bestMoveScore << 16) + ((y << 8) + x));
-                //  }
+                 }
             }
         }
     // exit(1);
 }
 
-int BotHenry::getScore(std::map<unsigned short, char> &grid, char value,
-char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta)
-{
-	unsigned short oponentPlace;
-    std::vector<int> moves;
-	int currentRating;
-
-    // exit(0);
-	if (currentPoint >= 10) return 999999;
-	if (oponentPoint >= 10) return 0;
-	if (GameManager::checkBoard(&grid, 0)) return -999999;
-	if (depth == 0) return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
-    BotHenry::generateMove(grid, moves, value, mode, noDouble);
-    for(int mov: (moves)) {
-        if (depth == MAX_DEPTH)
-            std::cout << "\t\t(" << ((int)((mov & 0xFFFF) >> 8)) << "," << ((int)((mov & 0xFFFF) & 0xFF)) << ") s:" << (int)(mov >> 16) << std::endl;
-    }
-    for(int mov: (moves)) {
-        grid[mov & 0xFFFF] = value;
-        currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
-        grid[mov & 0xFFFF] = 0;
-        if (currentRating > alpha) {
-            alpha = currentRating;
-            pos = mov & 0xFFFF;
-        }
-        if (alpha > beta) {
-            break;
-        }
-    }
-	return alpha;
-}
-
 // int BotHenry::getScore(std::map<unsigned short, char> &grid, char value,
 // char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta)
 // {
-// 	int currentRating, tmpScore = -10000000;
-// 	char fx = 0, fy = 0, first = 0;
 // 	unsigned short oponentPlace;
-// 	if (currentPoint >= 10)
-//         return 999999;
-// 	if (oponentPoint >= 10)
-//         return 0;
-// 	if (GameManager::checkBoard(&grid, 0))
-// 		return -999999;
-// 	if (depth == 0)
-// 		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
-// 	for (char x = 0; x < 19; x++) {
-//  		for (char y = 0; y < 19; y++) {
-// 			if (first == 0 && BotHenry::getSquare(grid, (y << 8) + x) && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
-// 				fx = x;
-// 				fy = y;
-// 				first = 1;
-// 			}
-// 		}
-// 	}
-// 	grid[(fy << 8) + fx] = value;
-// 	tmpScore = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
-// 	pos = (fy << 8) + fx;
-// 	grid[(fy << 8) + fx] = 0;
-// 	if (tmpScore >= alpha)
-// 		alpha = tmpScore;
-// 	fy++;
-// 	if (fy == 19) {
-// 		fx++;
-// 		fy = 0;
-// 	}
-// 	if (tmpScore < beta)
-// 		for (char x = fx; x < 19; x++) {
-// 			for (char y = fy; y < 19; y++) {
-// 				if (BotHenry::getSquare(grid, (y << 8) + x) && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
-// 					grid[(y << 8) + x] = value;
-// 					currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -(alpha + 1), -alpha);
-// 					// if (currentRating > alpha && currentRating < beta)
-// 						// currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
-// 					grid[(y << 8) + x] = 0;
-// 					if (currentRating > tmpScore)
-// 					{
-// 						tmpScore = currentRating;
-// 						pos = (y << 8) + x;
-// 						if (currentRating > alpha) {
-// 							alpha = currentRating;
-// 							pos = (y << 8) + x;
-// 							if (alpha > beta) {
-// 			                    break;
-// 			                }
-// 						}
-// 					}
-// 				}
-// 			}
-// 			fy = 0;
-// 		}
-// 	return tmpScore;
+//     std::vector<int> moves;
+// 	int currentRating;
+//
+//     // exit(0);
+// 	if (currentPoint >= 10) return 999999;
+// 	if (oponentPoint >= 10) return 0;
+// 	if (GameManager::checkBoard(&grid, 0)) return -999999;
+// 	if (depth == 0) return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+//     BotHenry::generateMove(grid, moves, value, mode, noDouble);
+//     for(int mov: (moves)) {
+//         if (depth == MAX_DEPTH)
+//             std::cout << "\t\t(" << ((int)((mov & 0xFFFF) >> 8)) << "," << ((int)((mov & 0xFFFF) & 0xFF)) << ") s:" << (int)(mov >> 16) << std::endl;
+//     }
+//     for(int mov: (moves)) {
+//         grid[mov & 0xFFFF] = value;
+//         currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
+//         grid[mov & 0xFFFF] = 0;
+//         if (currentRating > alpha) {
+//             alpha = currentRating;
+//             pos = mov & 0xFFFF;
+//         }
+//         if (alpha > beta) {
+//             break;
+//         }
+//     }
+// 	return alpha;
 // }
+
+int BotHenry::getScore(std::map<unsigned short, char> &grid, char value,
+char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta)
+{
+	int currentRating, tmpScore = -10000000;
+	unsigned short oponentPlace;
+	std::vector<int> moves;
+
+	if (currentPoint >= 10)
+        return 999999;
+	if (oponentPoint >= 10)
+        return 0;
+	if (GameManager::checkBoard(&grid, 0))
+		return -999999;
+	if (depth == 0)
+		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+	BotHenry::generateMove(grid, moves, value, mode, noDouble);
+	grid[moves.front() & 0xFFFF] = value;
+	tmpScore = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
+	pos = moves.front()  & 0xFFFF;
+	grid[moves.front() & 0xFFFF] = 0;
+	moves.erase(moves.begin());
+	if (tmpScore >= alpha)
+		alpha = tmpScore;
+	if (tmpScore < beta)
+		for(int mov: (moves)) {
+			grid[mov & 0xFFFF] = value;
+			currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -(alpha + 1), -alpha);
+			if (currentRating > alpha && currentRating < beta)
+				currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
+			grid[mov & 0xFFFF] = 0;
+			if (currentRating > tmpScore)
+			{
+				tmpScore = currentRating;
+				pos = mov & 0xFFFF;
+				if (currentRating > alpha) {
+					alpha = currentRating;
+					pos = mov & 0xFFFF;
+					if (alpha > beta) {
+	                    break;
+	                }
+				}
+			}
+		}
+	return tmpScore;
+}
 
 bool BotHenry::wantSwap( std::map<unsigned short int, char> grid ) const {
     (void)grid;
