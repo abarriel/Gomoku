@@ -8,8 +8,11 @@
 # include "Heuristic.class.hpp"
 # include <chrono>
 # include <thread>
-#include <future>
-#include <vector>
+# include <deque>
+# include <queue>
+# include <future>
+# include <vector>
+
 # define MAX_DEPTH 2
 
 struct resThread{
@@ -23,6 +26,8 @@ class BotHenry : public APlayer{
 		BotHenry( std::string name );
 		BotHenry( void );
 		virtual ~BotHenry( void );
+        static void popScore(std::map<unsigned short, char> &grid, unsigned short pos, unsigned short dir, char &bestMoveScore);
+        static void generateMove(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble);
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
 		virtual unsigned short int debugPlay( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
 		static int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta);

@@ -15,46 +15,70 @@ GameManager::GameManager( bool asking ) :
 		this->PlayerOne = new Human("Black");
         // this->PlayerTwo = new Human("White");
         this->PlayerTwo = new BotHenry("White");
-        return;
     }
-    std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
-    std::cin >> res;
-    if (res == "pro")
-        this->gameMode = 2;
-    if (res == "long-pro")
-        this->gameMode = 3;
-    if (res == "swap")
-        this->gameMode = 4;
-    if (res == "swap2")
-        this->gameMode = 5;
-    std::cout << "Capture mode (Y/n): ";
-    std::cin >> res;
-    if (res == "n") {
-        this->canCapture = false;
-        this->endingCapture = false;
-    } else {
-        std::cout << "Ending capture mode (Y/n): ";
-        std::cin >> res;
-        if (res == "n")
+    else {
+        std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
+        std::getline(std::cin, res);
+        if (res == "pro")
+            this->gameMode = 2;
+        if (res == "long-pro")
+            this->gameMode = 3;
+        if (res == "swap")
+            this->gameMode = 4;
+        if (res == "swap2")
+            this->gameMode = 5;
+        std::cout << "Capture mode (Y/n): ";
+        std::getline(std::cin, res);
+        if (res.at(0) == 'n') {
+            this->canCapture = false;
             this->endingCapture = false;
+        } else {
+            std::cout << "Ending capture mode (Y/n): ";
+            std::getline(std::cin, res);
+            if (res.at(0) == 'n')
+                this->endingCapture = false;
+        }
+        std::cout << "No double-threes (Y/n): ";
+        std::getline(std::cin, res);
+        if (res.at(0) == 'n')
+            this->noDoubleThrees = false;
+        std::cout << "Human player 1 (Y/n): ";
+        std::getline(std::cin, res);
+        if (res.at(0) == 'n')
+            this->PlayerOne = new BotHenry();
+        else
+            this->PlayerOne = new Human();
+        std::cout << "Human player 2 (Y/n): ";
+        std::getline(std::cin, res);
+        if (res.at(0) == 'n')
+            this->PlayerTwo = new BotHenry();
+        else
+            this->PlayerTwo = new Human();
     }
-    std::cout << "No double-threes (Y/n): ";
-    std::cin >> res;
-    if (res == "n")
-        this->noDoubleThrees = false;
-    std::cout << "Human player 1 (Y/n): ";
-    std::cin >> res;
-    if (res == "n")
-        this->PlayerOne = new BotHenry();
-    else
-        this->PlayerOne = new Human();
-    std::cout << "Human player 2 (Y/n): ";
-    std::cin >> res;
-    if (res == "n")
-        this->PlayerTwo = new BotHenry();
-    else
-        this->PlayerTwo = new Human();
+    std::cout << "debug:";
+    std::getline(std::cin, res);
+    if (res.at(0) == 'y')
+        this->fillMap();
 	return;
+}
+
+void GameManager::fillMap(void) {
+    std::string res;
+    char p;
+
+    std::getline(std::cin, res);
+    p = res.at(0);
+    this->turn = (((p - 48) - 1) + 3);
+    for (char x = 0; std::getline(std::cin, res); x++) {
+        if(x > 19) return ;
+        std::stringstream ss(res);
+        for (char y = 0; ss >> p; y++) {
+            if (p == '1' || p == '2') {
+                this->grid[(x << 8) + y] = p - 48;
+            }
+            // std::cout << "y" << (int)y << "d" << std::endl;
+        }
+    }
 }
 
 std::stack<unsigned short int> &GameManager::getHistory() const {
@@ -199,7 +223,7 @@ void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
             else if ((int)grid[x * 256 + y] == 2)
                 std::cout << "\033[1;32m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
             else
-                std::cout << (int)grid[x * 256 + y] << " ";
+                std::cout << ". ";
 		}
         std::cout << std::endl;
     }
@@ -217,7 +241,7 @@ void GameManager::debugGrid(void) {
             else if ((int)this->grid[x * 256 + y] == 2)
                 std::cout << "\033[1;32m" << (int)this->grid[x * 256 + y] << "\033[0m" << " ";
             else
-                std::cout << (int)this->grid[x * 256 + y] << " ";
+                std::cout << ". ";
 		}
         std::cout << std::endl;
     }

@@ -16,6 +16,7 @@ int main( int argc, char const **argv )
 	else
 		GameMan = GameManager::instance(true);
 	SDLMan = new SDLManager();
+    GameMan->printGrid(SDLMan);
 	SDLMan->render();
 	auto start = std::chrono::high_resolution_clock::now();
 	while(!quit) {

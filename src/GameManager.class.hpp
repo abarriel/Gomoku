@@ -8,7 +8,7 @@
 # include <stack>
 # include <string>
 #include <iomanip>
-
+#include <sstream>
 # include "SDLManager.class.hpp"
 # include "APlayer.class.hpp"
 # include "Human.class.hpp"
@@ -34,6 +34,7 @@ class GameManager {
 		char otherPoint(char o);
 
 		APlayer &getPlayer(char);
+        void fillMap(void);
 		static Vec UsiToVec(unsigned short int usi);
 		static unsigned short int VecToUsi(Vec vec);
 		static bool goodInput(std::map<unsigned short int, char> &grid, char value, unsigned short int pos, char mode, bool noDouble);

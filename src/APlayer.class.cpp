@@ -6,7 +6,7 @@ APlayer::APlayer( std::string nm ) : name(nm), point(0) {
 
 APlayer::APlayer( void ) : point(0) {
 	std::cout << "Name it:" << std::endl;
-	std::cin >> this->name;
+    std::getline(std::cin, this->name);
 	return;
 }
 
