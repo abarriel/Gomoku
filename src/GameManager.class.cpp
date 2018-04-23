@@ -13,8 +13,9 @@ GameManager::GameManager( bool asking ) :
 	this->history = new std::stack<unsigned short int>;
     if (!asking) {
 		this->PlayerOne = new Human("Black");
-        // this->PlayerTwo = new Human("White");
-        this->PlayerTwo = new BotHenry("White");
+        this->PlayerTwo = new Human("White");
+        // this->PlayerTwo = new BotHenry("White");
+        return;
     }
     else {
         std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";

@@ -2,10 +2,10 @@ NAME = Gomoku
 
 # COMPILATION
 CC = clang++
-CCFLAGS = -Wall -Wextra -std=c++0x -pthread
+CCFLAGS = -Wall -Wextra -std=c++0x -pthread -I sdl/include
 
 LNK = clang++
-LNKFLAGS =
+LNKFLAGS = -L sdl/lib -l SDL2 -l SDL2_image
 
 # DIRECTORIES
 LIBDIR = lib
@@ -57,7 +57,7 @@ INCS = $(addprefix -I , $(INCS_DIRS))
 
 all: $(NAME)
 $(NAME): build $(LIBS) $(OBJS)
-	$(LNK) -o $(NAME) $(LIBS) -I /Library/Frameworks/SDL2.framework/Versions/A/Headers -F /Library/Frameworks/ -framework SDL2 $(OBJS) $(INCS) $(LNKFLAGS)
+	$(LNK)  -o $(NAME) $(LIBS)  $(OBJS) $(INCS) $(LNKFLAGS)
 	echo "$(LOG_CLEAR)$(NAME)... compiled $(LOG_GREEN)✓$(LOG_NOCOLOR)"
 build:
 	mkdir -p $(OBJDIR)

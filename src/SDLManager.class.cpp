@@ -1,7 +1,6 @@
 #include "SDLManager.class.hpp"
-
 SDLManager::SDLManager( void ) {
-	SDL_Surface* img;
+	// SDL_Surface* img;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
         return;
@@ -9,17 +8,20 @@ SDLManager::SDLManager( void ) {
     if(this->MainWindow == 0)
         return;
 	this->MainRenderer = SDL_CreateRenderer(this->MainWindow, -1, SDL_RENDERER_ACCELERATED);
-	img = SDL_LoadBMP("img/board.bmp");
+    SDL_Surface *img;
+    img = IMG_Load("img/board.png");
+	// img = SDL_LoadBMP("img/board.bmp");
+	// img = IMG_LOAD("img/board.bmp");
 	if (img == 0)
 		return;
 	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, img);
 	SDL_FreeSurface(img);
-	img = SDL_LoadBMP("img/black.bmp");
+	img = IMG_Load("img/black.png");
 	if (img == 0)
 		return;
 	this->BlackRock = SDL_CreateTextureFromSurface(this->MainRenderer, img);
 	SDL_FreeSurface(img);
-	img = SDL_LoadBMP("img/white.bmp");
+	img = IMG_Load("img/white.png");
 	if (img == 0)
 		return;
 	this->WhiteRock = SDL_CreateTextureFromSurface(this->MainRenderer, img);
@@ -30,7 +32,7 @@ SDLManager::SDLManager( void ) {
 void SDLManager::placeRock(int color, Vec vec) {
 	SDL_Rect pos;
 
-	pos.x = 127 + 50 * vec.x;
+	pos.x = 115 + 50 * vec.x;
 	pos.y = 127 + 50 * vec.y;
 	pos.w = 41;
   	pos.h = 41;
