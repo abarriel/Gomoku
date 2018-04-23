@@ -15,8 +15,8 @@ BotHenry::~BotHenry( void ) {
 bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned short value) {
     if (grid[value] != 0)
         return false;
-    for(char x = -2; x < 3; x++)
-        for(char y = -2; y < 3; y++) {
+    for(char x = -1; x < 2; x++)
+        for(char y = -1; y < 2; y++) {
             if (!(x == 0 && y == 0) && grid[value + x + 256 * y] != 0) {
 				return true;
 			}
@@ -62,7 +62,7 @@ void BotHenry::popScore(std::map<unsigned short, char> &grid, unsigned short pos
         // std::cout << "-" << (int)grid[pos] << "-" << std::endl;
         pos = pos - dir;
     }
-    // std::cout << "(" << ((int)pos >> 8)  << "," << ((int)pos & 0xFF) << ") {"<< (int)grid[pos + dir] <<"}" << std::endl;
+    std::cout << "(" << ((int)pos >> 8)  << "," << ((int)pos & 0xFF) << ")" << std::endl;
     if (grid[pos] != grid[pos + dir])
         bestMoveScore += 2;
     else if (grid[pos] != grid[pos + dir * 2])
@@ -70,7 +70,7 @@ void BotHenry::popScore(std::map<unsigned short, char> &grid, unsigned short pos
     else if (grid[pos] != grid[pos + dir * 3])
         bestMoveScore += 4;
     else if (grid[pos] != grid[pos + dir * 4])
-        bestMoveScore += 5;
+        bestMoveScore -= 10000;
     return ;
 }
 // 3 . 3 3
@@ -85,24 +85,29 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
                 && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
                 bestMoveScore = 0;
             // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl;               
-                //  BotHenry::popScore(grid, (y << 8) + x, 256, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 255, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 257, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 65535, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 1, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFF00, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFF01, bestMoveScore);
-                //  BotHenry::popScore(grid, (y << 8) + x, 0xFEFF, bestMoveScore);
-                grid[(y << 8) + x] = value;                
-                bestMoveScore = Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
-                grid[(y << 8) + x] = 0;
-            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
-                //  if (bestMoveScore) {
+                 BotHenry::popScore(grid, (y << 8) + x, 256, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 255, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 257, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 65535, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 1, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFF00, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFF01, bestMoveScore);
+                 BotHenry::popScore(grid, (y << 8) + x, 0xFEFF, bestMoveScore);
+                // grid[(y << 8) + x] = value;                
+                // bestMoveScore = Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+                // grid[(y << 8) + x] = 0;
+                if (bestMoveScore < 0) {
+                    moves.clear();
+                    moves.push_back((1000 << 16) + ((y << 8) + x);
+                }
+                else if (bestMoveScore) {
+                    std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
                     // moves.push_back((bestMoveScore << 16) + ((y << 8) + x));
                     moves.insert(std::upper_bound(moves.begin(), moves.end(), (bestMoveScore << 16) + ((y << 8) + x), [](const int& lhs, const int& rhs ) {
                          return ((lhs >> 16) > (rhs >> 16));
+                        // return 0;
                     }), (bestMoveScore << 16) + ((y << 8) + x));
-                //  }
+                 }
             }
         }
     // exit(1);
