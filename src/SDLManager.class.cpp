@@ -10,8 +10,6 @@ SDLManager::SDLManager( void ) {
 	this->MainRenderer = SDL_CreateRenderer(this->MainWindow, -1, SDL_RENDERER_ACCELERATED);
     SDL_Surface *img;
     img = IMG_Load("img/board.png");
-	// img = SDL_LoadBMP("img/board.bmp");
-	// img = IMG_LOAD("img/board.bmp");
 	if (img == 0)
 		return;
 	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, img);
@@ -32,8 +30,8 @@ SDLManager::SDLManager( void ) {
 void SDLManager::placeRock(int color, Vec vec) {
 	SDL_Rect pos;
 
-	pos.x = 115 + 50 * vec.x;
-	pos.y = 127 + 50 * vec.y;
+	pos.x = 46 + 59.6 * vec.x;
+	pos.y = 46 + 59.6 * vec.y;
 	pos.w = 41;
   	pos.h = 41;
 	switch(color) {
@@ -48,8 +46,8 @@ void SDLManager::placeRock(int color, Vec vec) {
 void SDLManager::placeRock(int color, unsigned short int point) {
 	SDL_Rect pos;
 
-	pos.x = 127 + 50 * (point & 15);
-	pos.y = 127 + 50 * (point >> 8);
+	pos.x = 46 + 59.6 * (point & 15);
+	pos.y = 46 + 59.6 * (point >> 8);
 	pos.w = 41;
   	pos.h = 41;
 	switch(color) {

@@ -18,9 +18,10 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
-		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
+		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT) {
 	    	throw std::exception();
-        nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+        }
+        nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
         if (this->goodInput(&grid, value, &event, mode, noDouble))
                 break ;
 	}
@@ -34,9 +35,9 @@ unsigned short int Human::debugPlay(std::map<unsigned short int, char> grid, cha
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
-		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
+		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
 	    	throw std::exception();
-        nextMove = ((event.button.x - 125) / 50) + ((event.button.y - 125) / 50) * 256;
+        nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
         if (this->goodInput(&grid, value, &event, mode, noDouble))
                 break ;
 	}
@@ -60,7 +61,7 @@ bool Human::wantSwap( std::map<unsigned short int, char> grid ) const {
 	std::cout << "Do you want to swap " << this->getName() << "?" << std::endl;
 	while ( !this->goodAwnser(&event) ) {
 		SDL_WaitEvent(&event);
-		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.key.keysym.sym == SDLK_ESCAPE)
 	    	throw std::exception();
 	}
 	if (event.key.keysym.scancode == SDL_SCANCODE_Y)
@@ -75,7 +76,7 @@ bool Human::wantDoublePlay( std::map<unsigned short int, char> grid ) const {
 	std::cout << "Do you want to double play " << this->getName() << "?" << std::endl;
 	while ( !this->goodAwnser(&event) ) {
 		SDL_WaitEvent(&event);
-		if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.key.keysym.sym == SDLK_ESCAPE)
 	    	throw std::exception();
 	}
 	if (event.key.keysym.scancode == SDL_SCANCODE_Y)
@@ -89,10 +90,10 @@ bool Human::goodInput(std::map<unsigned short, char> *grid, char value, SDL_Even
 	if (event->button.type == SDL_MOUSEBUTTONDOWN &&
 		event->button.button == SDL_BUTTON_LEFT &&
 		event->button.windowID == 1 &&
-		event->button.x >= 125 && event->button.y >= 125 &&
-		event->button.x <= 1075 && event->button.y <= 1075)
+		event->button.x >= 46 && event->button.y >= 46 &&
+		event->button.x <= 1158 && event->button.y <= 1158)
 	{
-		pos = ((event->button.x - 125) / 50) + ((event->button.y - 125) / 50) * 256;
+		pos = ((event->button.x - 46) / 60) + ((event->button.y - 46) / 60) * 256;
 		return GameManager::goodInput(*grid, value, pos, mode, noDouble);
 	}
 	return false;

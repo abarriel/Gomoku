@@ -93,6 +93,7 @@ GameManager::~GameManager( void ) {
 }
 
 void GameManager::printGrid(SDLManager *SDLMan) {
+    if (this->grid.empty()) return ;
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			SDLMan->placeRock(this->grid[y * 256 + x], Vec(x, y));
@@ -151,6 +152,9 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 	APlayer *player;
 	bool skipPlace = false;
 
+    if (this->turn == 1)
+            if(this->grid.empty())
+                std::cout << "EMPTY" << std::endl;
 	if (this->turn % 2 == 1)
 		player = PlayerOne;
 	else
@@ -214,6 +218,7 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 }
 
 void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
+    if (grid.empty()) return ;
     std::cout << "=================== DEBUG GRID ================" << std::endl;
     std::cout << "   : 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8" << std::endl;
     for (char x = 0; x < 19; x++) {
@@ -223,8 +228,10 @@ void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
                 std::cout << "\033[1;31m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
             else if ((int)grid[x * 256 + y] == 2)
                 std::cout << "\033[1;32m" << (int)grid[x * 256 + y] << "\033[0m" << " ";
-            else
+            else if ((int)grid[x * 256 + y] == 0)
                 std::cout << ". ";
+             else
+                std::cout << "! ";
 		}
         std::cout << std::endl;
     }
@@ -232,6 +239,7 @@ void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
 }
 
 void GameManager::debugGrid(void) {
+    if (grid.empty()) return ;    
     std::cout << "=================== DEBUG GRID ================" << std::endl;
     std::cout << "   : 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8" << std::endl;
     for (char x = 0; x < 19; x++) {
