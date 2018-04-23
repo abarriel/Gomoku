@@ -28,7 +28,7 @@ int main( int argc, char const **argv )
 					SDL_WaitEvent(&event);
 					if (event.key.keysym.sym == SDLK_h)
 						GameMan->replay(SDLMan);
-					if (event.window.event == SDL_WINDOWEVENT_CLOSE || event.key.keysym.sym == SDLK_ESCAPE)
+					if (event.key.keysym.sym == SDLK_ESCAPE)
 		    			quit = true;
 				}
 			}
