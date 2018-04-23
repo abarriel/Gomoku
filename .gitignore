@@ -1,3 +1,4 @@
 Gomoku
+sdl
 *.o
 .DS_Store
