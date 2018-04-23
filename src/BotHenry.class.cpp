@@ -82,7 +82,7 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
 			if (BotHenry::getSquare(grid, (y << 8) + x)
                 && GameManager::goodInput(grid, value, (y << 8) + x, mode, noDouble)) {
                 bestMoveScore = 0;
-                // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl;               
+            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl;               
                  BotHenry::popScore(grid, (y << 8) + x, 256, bestMoveScore);
                  BotHenry::popScore(grid, (y << 8) + x, 255, bestMoveScore);
                  BotHenry::popScore(grid, (y << 8) + x, 257, bestMoveScore);
@@ -91,7 +91,10 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
                  BotHenry::popScore(grid, (y << 8) + x, 0xFF00, bestMoveScore);
                  BotHenry::popScore(grid, (y << 8) + x, 0xFF01, bestMoveScore);
                  BotHenry::popScore(grid, (y << 8) + x, 0xFEFF, bestMoveScore);
-                // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
+                // grid[(y << 8) + x] = value;                
+                // bestMoveScore = Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+                // grid[(y << 8) + x] = 0;
+            // std::cout << "\t(" << (int)y  << "," << (int)x << ") score: " << (int)bestMoveScore << std::endl << std::endl;
                  if (bestMoveScore) {
                     moves.insert(std::upper_bound(moves.begin(), moves.end(), (bestMoveScore << 16) + ((y << 8) + x), [](const int& lhs, const int& rhs ) {
                         return 0;
