@@ -13,7 +13,7 @@
 # include <future>
 # include <vector>
 
-# define MAX_DEPTH 4
+# define MAX_DEPTH 2
 
 struct resThread{
     int curScore;
@@ -27,10 +27,16 @@ class BotHenry : public APlayer{
 		BotHenry( void );
 		virtual ~BotHenry( void );
         static void popScore(std::map<unsigned short, char> &grid, unsigned short pos, unsigned short dir, char &bestMoveScore);
-        static void generateMove(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble);
+
+		static void generateMove(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth);
+        static void generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth);
+
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
 		virtual unsigned short int debugPlay( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
+
 		static int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta);
+		static int getAttack(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta);
+
 		static unsigned int getFirstScore(resThread &restT, std::map<unsigned short int, char> grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth,  unsigned short cur);
         static bool getSquare(std::map<unsigned short int, char> &grid, unsigned short value);
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const;

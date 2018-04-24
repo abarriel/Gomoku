@@ -30,6 +30,7 @@ class Heuristic {
 		void countLine( void );
 
 		void deductScore();
+		char isAtack(bool me);
 
 	private:
 

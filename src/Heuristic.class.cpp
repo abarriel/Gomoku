@@ -82,6 +82,28 @@ void Heuristic::deductScore() {
 	// }
 }
 
+char Heuristic::isAtack(bool isMe) {
+	int me = this->id - 1;
+	int oponent = (3 - this->id) - 1;
+
+	if (isMe) {
+		if (this->p[me].five > 0 || this->p[me].fourFree)
+			return 2;
+		else if (this->p[me].threeFree)
+			return 1;
+		return 0;
+	}
+	else if (this->p[me].five > 0)
+		return 0;
+	else if (this->p[oponent].five > 0)
+		return 2;
+	else if (this->p[oponent].fourHalf || this->p[me].fourFree)
+		return 2;
+	else if (this->p[oponent].threeFree)
+		return 2;
+	return 1;
+}
+
 void Heuristic::seqToLine(unsigned short cur, unsigned short dir) {
 	unsigned short seq;
 	char res;
