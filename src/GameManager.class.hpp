@@ -31,6 +31,7 @@ class GameManager {
 		std::stack<unsigned short int> &getHistory( void ) const;
 
 		bool getEnding( void );
+		bool getCapture( void );
 		char otherPoint(char o);
 
 		APlayer &getPlayer(char);

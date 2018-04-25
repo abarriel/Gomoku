@@ -268,6 +268,11 @@ char GameManager::otherPoint(char o) {
 bool GameManager::getEnding( void ) {
 	return this->endingCapture;
 }
+
+bool GameManager::getCapture( void ) {
+	return this->canCapture;
+}
+
 APlayer& GameManager::getPlayer(char which) {
 	if (which == 1)
 		return *this->PlayerOne;
