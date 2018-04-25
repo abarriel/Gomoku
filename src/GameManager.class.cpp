@@ -324,9 +324,10 @@ void GameManager::removeCapture(std::map<unsigned short int, char> *grid, unsign
 	if (!((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 || (tmp >> 8) < 0 || (tmp >> 8) > 18 ||
 		(*grid)[tmp] != (*grid)[place] ||
 		3 != (*grid)[place + dir] || 3 != (*grid)[place + dir * 2])
-	)
+	) {
 		(*grid)[place + dir] = 3 - (*grid)[place];
 		(*grid)[place + dir * 2] = 3 - (*grid)[place];
+	}
 }
 
 unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char>&grid, Vec from, Vec to, Vec dir, char value, Vec skip) {
