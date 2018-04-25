@@ -199,16 +199,24 @@ void Heuristic::countLine( void ) {
 	}
 }
 
-std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) {
+std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) { // the worst function i have ever done hahaha
 	std::cout << "score: " << i.getScore() << std::endl;
-	std::cout << " P1 ->" << std::endl;
-    std::cout << "\t3half: " << i.getPlayerdata(0).threeHalf << " 3free: " <<	i.getPlayerdata(0).threeFree << std::endl;
-	std::cout << "\t4half: " << i.getPlayerdata(0).fourHalf << " 4free: " <<	i.getPlayerdata(0).fourFree << std::endl;
-    std::cout << "\tfive: " << i.getPlayerdata(0).five << std::endl;
-    std::cout << " P2 ->" << std::endl;
-    std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree << std::endl;
-	std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree << std::endl;
-    std::cout << "\tfive: " << i.getPlayerdata(1).five << std::endl;
+    if (i.getPlayerdata(0).threeHalf || i.getPlayerdata(0).threeFree || i.getPlayerdata(0).fourHalf || i.getPlayerdata(0).fourFree || i.getPlayerdata(0).five)
+        std::cout << " P1 ->" << std::endl;
+    if (i.getPlayerdata(0).threeHalf || i.getPlayerdata(0).threeFree)
+        std::cout << "\t3half: " << i.getPlayerdata(0).threeHalf << " 3free: " <<	i.getPlayerdata(0).threeFree << std::endl;
+    if (i.getPlayerdata(0).fourHalf || i.getPlayerdata(0).fourFree)
+        std::cout << "\t4half: " << i.getPlayerdata(0).fourHalf << " 4free: " <<	i.getPlayerdata(0).fourFree << std::endl;
+    if (i.getPlayerdata(0).five)
+        std::cout << "\tfive: " << i.getPlayerdata(0).five << std::endl;
+    if (i.getPlayerdata(1).threeHalf || i.getPlayerdata(1).threeFree || i.getPlayerdata(1).fourHalf || i.getPlayerdata(1).fourFree || i.getPlayerdata(1).five)
+        std::cout << " P2 ->" << std::endl;
+    if (i.getPlayerdata(1).threeHalf || i.getPlayerdata(1).threeFree)    
+        std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree << std::endl;
+    if (i.getPlayerdata(1).fourHalf || i.getPlayerdata(1).fourFree)
+        std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree << std::endl;
+    if (i.getPlayerdata(1).five)
+        std::cout << "\tfive: " << i.getPlayerdata(1).five << std::endl;
 	return o;
 }
 
