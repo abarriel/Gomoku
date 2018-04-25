@@ -3,96 +3,11 @@
 #include <algorithm>
 #include <numeric>
 #include <future>
-// C++ program to demonstrate working of Alpha-Beta Pruning
-// // #include&lt;bits/stdc++.h&gt;
-// using namespace std;
-
-// // # Initial values of Aplha and Beta
-// const int MAX = 1000;
-// const int MIN = -1000;
-
-// // Returns optimal value for current player (Initially called
-// // for root and maximizer)
-// int minimax(int depth, int nodeIndex, bool maximizingPlayer,
-// 			int values[], int a, int b)
-// {
-// 	// Terminating condition. i.e leaf node is reached
-// 	if (depth == 3)
-// 		return values[nodeIndex];
-
-// 	if (maximizingPlayer)
-// 	{
-// 		int best = MIN;
-
-// 		// Recur for left and right children
-// 		for (int i=0; i&lt;2; i++)
-// 		{
-// 			int val = minimax(depth+1, nodeIndex*2+i,
-// 							false, values, a, b);
-// 			best = max(best, val);
-// 			a = max(a, best);
-
-// 			// Alpha Beta Pruning
-// 			if (b &lt;= a)
-// 				break;
-// 		}
-// 		return best;
-// 	}
-// 	else
-// 	{
-// 		int best = MAX;
-
-// 		// Recur for left and right children
-// 		for (int i=0; i&lt;2; i++)
-// 		{
-// 			int val = minimax(depth+1, nodeIndex*2+i,
-// 							true, values, a, b);
-// 			best = min(best, val);
-// 			b = min(b, best);
-
-// 			// Alpha Beta Pruning
-// 			if (b &lt;= a)
-// 				break;
-// 		}
-// 		return best;
-// 	}
-// }
-// int o[] = {0,3,6,4,2,1,5,7,4,8};
-// int o[] = {0,10,11,9,12,14,15,13,14,5,2,4,1,3,22,20,21};
-int o[] = {0, 3,12,8,2,4,6,14,5,2};
-
-int heurastic() {
-    static int i = 0;
-    i++;
-    // if()
-    std::cout << o[i];
-    return o[i];
-}
 #include <numeric>
 #include <algorithm>
+int MinMax() {
 
-const int MAX = 1000;
-const int MIN = -1000;
-
-int MinMax(int deapth, unsigned int &place, int a, int b) {
-    int score;
-    // int v = 1000;
-    unsigned int OPplace;
-
-    if (deapth == 0)
-        return heurastic();
-    for (size_t i = 0; i < 3; i++) {
-        std::cout << '-';
-        score = -MinMax(deapth - 1, OPplace,  -b, -a);
-        if (score >= a) {
-            a = score;
-            place = o[i];
-            if (a >= b)
-            // 
-                break;
-        }
-    }
-    return a;
+    return 1;
 }
 
 int	main() {
@@ -101,9 +16,24 @@ int	main() {
     // int b = INT_MAX;
     auto start = std::chrono::high_resolution_clock::now();
     // minimax(0, 0, true, values, MIN, MAX);;
-    int res = MinMax(2, place, MIN, MAX);
+    std::thread(MinMax);
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
+    std::thread();
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "\nMinMax : " << res << " place : " << place << '\n';
     std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms\n";
     return 0;
 }

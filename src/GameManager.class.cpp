@@ -60,6 +60,7 @@ GameManager::GameManager( bool asking ) :
     std::getline(std::cin, res);
     if (res.at(0) == 'y')
         this->fillMap();
+    std::cout << std::endl;
 	return;
 }
 
