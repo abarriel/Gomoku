@@ -1,5 +1,5 @@
 #include "BotHenry.class.hpp"
-# define MAX_DEPTH 4
+# define MAX_DEPTH 2
 
 BotHenry::BotHenry( std::string nm ) : APlayer(nm) {
     // this
@@ -88,16 +88,9 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     // }
 
    auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(res), -100000000, 100000000, std::ref(getScore_isdone));
-    // if (generateAttackLength >= 3) {
-        // std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
-    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
-    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos3), -100000000, 100000000, 3);
-    // } else if (generateAttackLength == 1) {
-    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
-    // } else if (generateAttackLength == 2) {
-    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
-    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
-    // }
+    auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
+    auto res2 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
+    auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos3), -100000000, 100000000, 3);
 
     std::chrono::milliseconds ms(600);
 	auto start = std::chrono::high_resolution_clock::now() + ms;
@@ -111,25 +104,33 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     } catch (std::runtime_error &e) {
         std::cout << "getScore is too long" << std::endl;
     }
-    // if (!(check && pos1 && pos2 && pos3 && pos4)) {
-    //     mvs[0].clear();
-    //     std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
-    //     BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
-    //     res = mvs[0].at(0) & 0xFFFF;
-    // } else if (!check) {
-    //     std::cout << "getScore was slow but not the attack" << std::endl;
-    //     if(pos1) res = pos1;
-    //     if(pos2) res = pos2;
-    //     if(pos3) res = pos3;
-    // }
+    try {
+        res1.get();
+        res2.get();
+        res3.get();
+    } catch (std::runtime_error &e) {
+        std::cout << "getAttack is too long" << std::endl;
+    }
     std::cout << "\tgetScore (finish on time?) "<< (int)check << " " << res << " (" << ((res & 0xFFFF) >> 8) <<","<< (res & 0xFF) <<")"<<std::endl;
+    if (!check && !pos1 && !pos2 && !pos3) {
+        mvs[0].clear();
+        std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
+        BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
+        res = mvs[0].at(0) & 0xFFFF;
+    } else if (pos1 || pos2 || pos3) {
+        std::cout << "getScore was slow but not the attack" << std::endl;
+        if(pos1) res = pos1;
+        else if(pos2) res = pos2;
+        else if(pos3) res = pos3;
+    }
     std::cout << "\tgetAttack(1): " << pos1 << " (" << ((pos1 & 0xFFFF) >> 8) <<","<< (pos1 & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetAttack(2): " << pos2 <<  " (" << ((pos2 & 0xFFFF) >> 8) <<","<< (pos2 & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetAttack(3): " << pos3 << " (" << ((pos3 & 0xFFFF) >> 8) <<","<< (pos3 & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "chooseen cout: " << res << std::endl;
     std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms\n";
     // exit(1);
-    std::cout << "chooseen cout: " << res << std::endl;
+    run = true;
     return res;
     }
 
@@ -346,6 +347,7 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 	unsigned short oponentPlace;
     std::vector<int> moves;
 
+    if (!run) throw std::runtime_error("timeout");    
 	if (currentPoint >= 10)
         return 2;
 	if (oponentPoint >= 10)
@@ -354,8 +356,10 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 		return 0;
     if (!already)
         BotHenry::generateAttack(grid, moves, value, mode, noDouble, depth);
-    else
+    else {
+        if (mvs[already].empty()) return 0;
         moves = mvs[already];
+    }
 	for(int mov: (moves)) {
 		if ((mov >> 16) == 2 && depth % 2 == 0) {		//si l'attaquant a win
 			pos = mov & 0xFFFF;
