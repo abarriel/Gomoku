@@ -52,35 +52,34 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
 
     std::size_t const generateAttackLength = mvs[0].size();
     std::size_t const size = round((generateAttackLength / 3));
-        // for(int mov: mvs[0]) {
-        //     std::cout << "\ts:" << (mov >> 16)  << " "<< mov << std::endl;
-        // }
-        // if (generateAttackLength == 2) {
-        //     mvs[1].push_back(mvs[0].at(0));
-        //     mvs[2].push_back(mvs[0].at(1));
-        // } else if (generateAttackLength == 1) {
-        //     mvs[1] = mvs[0];
-        // } else if (generateAttackLength) {
-        //     mvs[1].insert(mvs[1].begin(), mvs[0].begin(), mvs[0].begin() + size);
-        //     mvs[0].erase(mvs[0].begin(), mvs[0].begin() + size); // lazyy
-        //     mvs[2].insert(mvs[2].begin(), mvs[0].begin(), mvs[0].begin() + size);
-        //     mvs[0].erase(mvs[0].begin(), mvs[0].begin() + size); // lazyy
-        //     mvs[3] = mvs[0];
-        // }
-        // if (generateAttackLength >= 3)
-        //     currentThread = 3;
-        // else if (generateAttackLength == 1)
-        //     currentThread = 1;
-        // else if (generateAttackLength == 2)
-        //     currentThread = 2;
-        // grid1 = grid;
-        // grid2 = grid;
-        // grid3 = grid;
-        // auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(ret[0]), -100000000, 100000000);
-        // auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid1), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[1]), -100000000, 100000000, 1);
-    auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid1), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[0]), -100000000, 100000000, 0);
-        // auto res2 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid2), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[2]), -100000000, 100000000, 2);
-        // auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid3), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[3]), -100000000, 100000000, 3);
+    for(int mov: mvs[0]) {
+        std::cout << "\ts:" << (mov >> 16)  << " "<< mov << std::endl;
+    }
+    if (generateAttackLength == 2) {
+        mvs[1].push_back(mvs[0].at(0));
+        mvs[2].push_back(mvs[0].at(1));
+    } else if (generateAttackLength == 1) {
+        mvs[1] = mvs[0];
+    } else if (generateAttackLength) {
+        mvs[1].insert(mvs[1].begin(), mvs[0].begin(), mvs[0].begin() + size);
+        mvs[0].erase(mvs[0].begin(), mvs[0].begin() + size); // lazyy
+        mvs[2].insert(mvs[2].begin(), mvs[0].begin(), mvs[0].begin() + size);
+        mvs[0].erase(mvs[0].begin(), mvs[0].begin() + size); // lazyy
+        mvs[3] = mvs[0];
+    }
+    if (generateAttackLength >= 3)
+        currentThread = 3;
+    else if (generateAttackLength == 1)
+        currentThread = 1;
+    else if (generateAttackLength == 2)
+        currentThread = 2;
+    grid1 = grid;
+    grid2 = grid;
+    grid3 = grid;
+    auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(ret[0]), -100000000, 100000000);
+    auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid1), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[1]), -100000000, 100000000, 1);
+    auto res2 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid2), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[2]), -100000000, 100000000, 2);
+    auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid3), value, mode, noDouble, currentPoint, enemyPoint, 18, std::ref(ret[3]), -100000000, 100000000, 3);
 
 	auto startAlgo = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds ms(600);
@@ -89,45 +88,44 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         if (score_done)
             check = 1;
     run = false;
-        // try {
-        //     getScore.get();
-        // } catch (std::runtime_error &e) {
-        //     std::cout << "getScore is too long" << std::endl;
-        // }
-        // try {
-        //     if (res1.get() != 2) ret[1] = 0;
-        // } catch (std::runtime_error &e) {
-        //     ret[1] = 0;
-        //     // std::cout << "getAttack is too long" << std::endl;
-        // }
-        // try {
-        //     if (res2.get() != 2) ret[2] = 0;
-        // } catch (std::runtime_error &e) {
-        //     ret[2] = 0;
-        //     // std::cout << "getAttack is too long" << std::endl;
-        // }
-        // try {
-        //     if (res3.get() != 2) ret[3] = 0;
-        // } catch (std::runtime_error &e) {
-        //     ret[3] = 0;
-        //     // std::cout << "getAttack is too long" << std::endl;
-        // }
-        // std::cout << "\tgetScore (ontime?)" << (int)check << " " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
-        // if (!check && !ret[1] && !ret[2] && !ret[3]) {
-        //     mvs[0].clear();
-        //     std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
-        //     BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
-        //     ret[0] = mvs[0].at(0) & 0xFFFF;
-        // } else if (ret[1] || ret[2] || ret[3]) {
-        //     std::cout << "attack is ready" << std::endl;
-        //     if (ret[1]) ret[0] = ret[1];
-        //     else if (ret[2]) ret[0] = ret[2];
-        //     else if (ret[3]) ret[0] = ret[3];
-        // }
-    if (ret[0]) std::cout << "\tgetAttack(0): " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
-        // if (ret[1]) std::cout << "\tgetAttack(1): " << ret[1] << " (" << ((ret[1] & 0xFFFF) >> 8) <<","<< (ret[1] & 0xFF) <<")"<<std::endl;
-        // if (ret[2]) std::cout << "\tgetAttack(2): " << ret[2] <<  " (" << ((ret[2] & 0xFFFF) >> 8) <<","<< (ret[2] & 0xFF) <<")"<<std::endl;
-        // if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
+    try {
+        getScore.get();
+    } catch (std::runtime_error &e) {
+        std::cout << "getScore is too long" << std::endl;
+    }
+    try {
+        if (res1.get() != 2) ret[1] = 0;
+    } catch (std::runtime_error &e) {
+        ret[1] = 0;
+        // std::cout << "getAttack is too long" << std::endl;
+    }
+    try {
+        if (res2.get() != 2) ret[2] = 0;
+    } catch (std::runtime_error &e) {
+        ret[2] = 0;
+        // std::cout << "getAttack is too long" << std::endl;
+    }
+    try {
+        if (res3.get() != 2) ret[3] = 0;
+    } catch (std::runtime_error &e) {
+        ret[3] = 0;
+        // std::cout << "getAttack is too long" << std::endl;
+    }
+    std::cout << "\tgetScore (ontime?)" << (int)check << " " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
+    if (!check && !ret[1] && !ret[2] && !ret[3]) {
+        mvs[0].clear();
+        std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
+        BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
+        ret[0] = mvs[0].at(0) & 0xFFFF;
+    } else if (ret[1] || ret[2] || ret[3]) {
+        std::cout << "attack is ready" << std::endl;
+        if (ret[1]) ret[0] = ret[1];
+        else if (ret[2]) ret[0] = ret[2];
+        else if (ret[3]) ret[0] = ret[3];
+    }
+    if (ret[1]) std::cout << "\tgetAttack(1): " << ret[1] << " (" << ((ret[1] & 0xFFFF) >> 8) <<","<< (ret[1] & 0xFF) <<")"<<std::endl;
+    if (ret[2]) std::cout << "\tgetAttack(2): " << ret[2] <<  " (" << ((ret[2] & 0xFFFF) >> 8) <<","<< (ret[2] & 0xFF) <<")"<<std::endl;
+    if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "\tchoose: " << ret[0] << std::endl;
     std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms thread: "<< std::chrono::duration<double, std::milli>(end - realStart).count() << " ms \n";

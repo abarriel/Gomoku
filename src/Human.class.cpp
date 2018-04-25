@@ -19,6 +19,8 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
 	while (1) {
 		SDL_WaitEvent(&event);
 		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT) {
+            printf("SDL_Init failed: %s\n", SDL_GetError());
+            std::cout << (int)event.key.keysym.sym << " d " << (int)SDLK_ESCAPE << std::endl;
 	    	throw std::exception();
         }
         nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
@@ -35,8 +37,11 @@ unsigned short int Human::debugPlay(std::map<unsigned short int, char> grid, cha
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
-		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT)
+		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT) {
+            printf("SDL_Init failed: %s\n", SDL_GetError());
+            std::cout << (int)event.key.keysym.sym << " d " << (int)SDLK_ESCAPE << std::endl;
 	    	throw std::exception();
+        }
         nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
         if (this->goodInput(&grid, value, &event, mode, noDouble))
                 break ;
@@ -61,8 +66,8 @@ bool Human::wantSwap( std::map<unsigned short int, char> grid ) const {
 	std::cout << "Do you want to swap " << this->getName() << "?" << std::endl;
 	while ( !this->goodAwnser(&event) ) {
 		SDL_WaitEvent(&event);
-		if (event.key.keysym.sym == SDLK_ESCAPE)
-	    	throw std::exception();
+		// if (event.key.keysym.sym == SDLK_ESCAPE)
+	    // 	throw std::exception();
 	}
 	if (event.key.keysym.scancode == SDL_SCANCODE_Y)
 		return true;
@@ -76,8 +81,8 @@ bool Human::wantDoublePlay( std::map<unsigned short int, char> grid ) const {
 	std::cout << "Do you want to double play " << this->getName() << "?" << std::endl;
 	while ( !this->goodAwnser(&event) ) {
 		SDL_WaitEvent(&event);
-		if (event.key.keysym.sym == SDLK_ESCAPE)
-	    	throw std::exception();
+		// if (event.key.keysym.sym == SDLK_ESCAPE)
+	    // 	throw std::exception();
 	}
 	if (event.key.keysym.scancode == SDL_SCANCODE_Y)
 		return true;

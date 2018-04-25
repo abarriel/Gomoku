@@ -8,22 +8,24 @@ SDLManager::SDLManager( void ) {
     if(this->MainWindow == 0)
         return;
 	this->MainRenderer = SDL_CreateRenderer(this->MainWindow, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Surface *img;
-    img = IMG_Load("img/board.png");
-	if (img == 0)
+    SDL_Surface *board = IMG_Load("img/board.png");
+    SDL_Surface *black = IMG_Load("img/black.png");
+    SDL_Surface *white = IMG_Load("img/white.png");
+	if (board == 0)
 		return;
-	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, img);
-	SDL_FreeSurface(img);
-	img = IMG_Load("img/black.png");
-	if (img == 0)
+    SDL_SetColorKey(board, 1, SDL_MapRGB(board->format, 0, 0, 0));
+	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, board);
+	// SDL_FreeSurface(img);
+	if (black == 0)
 		return;
-	this->BlackRock = SDL_CreateTextureFromSurface(this->MainRenderer, img);
-	SDL_FreeSurface(img);
-	img = IMG_Load("img/white.png");
-	if (img == 0)
+    SDL_SetColorKey(black, 1, SDL_MapRGB(black->format, 0, 0, 0));
+	this->BlackRock = SDL_CreateTextureFromSurface(this->MainRenderer, black);
+	// SDL_FreeSurface(img);
+    if (white == 0)
 		return;
-	this->WhiteRock = SDL_CreateTextureFromSurface(this->MainRenderer, img);
-	SDL_FreeSurface(img);
+    SDL_SetColorKey(white, 1, SDL_MapRGB(white->format, 0, 0, 0));
+	this->WhiteRock = SDL_CreateTextureFromSurface(this->MainRenderer, white);
+	// SDL_FreeSurface(img);
 	SDL_RenderCopy(this->MainRenderer, this->Background, NULL, NULL);
 }
 
