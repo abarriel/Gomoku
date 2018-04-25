@@ -11,10 +11,15 @@ int main( int argc, char const **argv )
 	bool quit(false);
 	GameManager *GameMan;
     // GameManager::instance();
-	if (argc == 2 && strncmp("default", argv[1], 7) == 0)
-		GameMan = GameManager::instance(false);
-	else
-		GameMan = GameManager::instance(true);
+    try {
+        if (argc == 2 && strncmp("default", argv[1], 7) == 0)
+            GameMan = GameManager::instance(false);
+        else
+            GameMan = GameManager::instance(true);
+   	} catch (std::exception &e) {
+           delete GameMan;
+           return 0;
+	}
 	SDLMan = new SDLManager();
     GameMan->printGrid(SDLMan);
 	SDLMan->render();
@@ -33,7 +38,6 @@ int main( int argc, char const **argv )
 				}
 			}
 		} catch (std::exception &e) {
-            std::cout << e.what() << std::endl;
 			quit = true;
 		}
     }

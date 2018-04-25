@@ -128,7 +128,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "\tchoose: " << ret[0] << std::endl;
-    std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms thread: "<< std::chrono::duration<double, std::milli>(end - realStart).count() << " ms \n";
+    std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms "<< std::fixed <<  std::setprecision(2) << std::chrono::duration<double, std::milli>(end - realStart).count() / 1000 << " s \n";
     run = true;
     score_done = false;
     return ret[0];
@@ -297,6 +297,10 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	pos = moves.front() & 0xFFFF;
 	BotHenry::undoPlay(grid, moves.front() & 0xFFFF);
 	moves.erase(moves.begin());
+       for(int mov: (moves)) {
+        if (depth == MAX_DEPTH)
+            std::cout << "\t\t( why le x et y inverser?" << ((int)((mov & 0xFFFF) >> 8)) << "," << ((int)((mov & 0xFFFF) & 0xFF)) << ") s:" << (int)(mov >> 16) << std::endl;
+    }
 	if (tmpScore >= alpha)
 		alpha = tmpScore;
 	if (tmpScore < beta)

@@ -45,14 +45,24 @@ GameManager::GameManager( bool asking ) :
             this->noDoubleThrees = false;
         std::cout << "Human player 1 (Y/n): ";
         std::getline(std::cin, res);
-        if (res.at(0) == 'n')
+        if (res.at(0) == 'n' && !this->gameMode)
             this->PlayerOne = new BotHenry();
+        else if(res.at(0) == 'n')
+            {
+                std::cout << "ai can only be play in standard mode" << std::endl;
+                throw std::exception();
+            }
         else
             this->PlayerOne = new Human();
         std::cout << "Human player 2 (Y/n): ";
         std::getline(std::cin, res);
-        if (res.at(0) == 'n')
+        if (res.at(0) == 'n'  && !this->gameMode)
             this->PlayerTwo = new BotHenry();
+        else if(res.at(0) == 'n')
+            {
+                std::cout << "ai can only be play in standard mode" << std::endl;
+                throw std::exception();
+            }
         else
             this->PlayerTwo = new Human();
     }
