@@ -33,17 +33,17 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     }
     // GameManager::instance()->debugGrid(grid);
 
-	//auto handle = std::async(std::launch::deferred, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, this->getPoint(),  GameManager::instance()->otherPoint(this->getPoint()), MAX_DEPTH, std::ref(res), -100000000, 100000000);
-    //handle.get();
+	auto handle = std::async(std::launch::deferred, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, this->getPoint(),  GameManager::instance()->otherPoint(this->getPoint()), MAX_DEPTH, std::ref(res), -100000000, 100000000);
+    handle.get();
 
-	if (this->getAttack(grid, value, mode, noDouble, this->getPoint(),  GameManager::instance()->otherPoint(this->getPoint()), 10, res, -100000000, 100000000) != 2) {
-		std::cout << "J'ai pas trouver" << '\n';
-		exit(0);
-	}
+	// if (this->getAttack(grid, value, mode, noDouble, this->getPoint(),  GameManager::instance()->otherPoint(this->getPoint()), 6, res, -100000000, 100000000) != 2) {
+	// 	std::cout << "J'ai pas trouver" << '\n';
+	// }
 
-    // GameManager::instance()->debugGrid(grid);
+    GameManager::instance()->debugGrid(grid);
 	auto end = std::chrono::high_resolution_clock::now();
 	std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms\n";
+	// exit(0);
 	return res;
 }
 
@@ -228,6 +228,16 @@ void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<
 // 	return alpha;
 // }
 
+char simulatePlay(std::map<unsigned short, char> &grid, unsigned short &pos, char value) {
+	grid[pos] = value;
+	return (GameManager::capture(&grid, pos, 3));
+}
+
+char undoPlay(std::map<unsigned short, char> &grid, unsigned short &pos, char value) {
+	GameManager::capture(&grid, pos, 3);
+	grid[pos] = 0;
+}
+
 int BotHenry::getScore(std::map<unsigned short, char> &grid, char value,
 char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta)
 {
@@ -235,17 +245,12 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	unsigned short oponentPlace;
 	std::vector<int> moves;
 
-	if (currentPoint >= 10)
-        return 999999;
 	if (oponentPoint >= 10)
-        return 0;
-	if (GameManager::checkBoard(&grid, 0))
-	{
-		return -999999;
-
-	}
+        return 10000;
+	if (GameManager::checkBoard(&grid, GameManager::instance()->getEnding()))
+		return 10000;
 	if (depth == 0)
-		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore();
+		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore() + 300 * currentPoint + 300 * oponentPoint;
 	BotHenry::generateMove(grid, moves, value, mode, noDouble, depth);
 
 	if (depth == MAX_DEPTH) {
@@ -265,13 +270,13 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	if (tmpScore < beta)
 		for(int mov: (moves)) {
 			grid[mov & 0xFFFF] = value;
-			currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -(alpha + 1), -alpha);
+			currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, currentPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha);
 			// if (currentRating > 40000)
 			// 	return 40001;
 			// currentRating = -currentRating;
 			if (currentRating > alpha && currentRating < beta)
 			{
-				currentRating = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha);
+				currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, oponentPoint, depth - 1, oponentPlace, -beta, -alpha);
 				// if (currentRating == -999999)
 				// {
 				// 	pos = mov & 0xFFFF;

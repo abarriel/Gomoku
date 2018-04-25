@@ -3,8 +3,8 @@
 GameManager *GameManager::p_instance = 0;
 GameManager::GameManager( bool asking ) :
 	turn(1),
-	canCapture(false),
-	endingCapture(false),
+	canCapture(true),
+	endingCapture(true),
 	noDoubleThrees(true),
 	gameMode(0),
 	swapOportunity(false)
@@ -153,8 +153,8 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 	bool skipPlace = false;
 
     if (this->turn == 1)
-            if(this->grid.empty())
-                std::cout << "EMPTY" << std::endl;
+        if(this->grid.empty())
+            std::cout << "EMPTY" << std::endl;
 	if (this->turn % 2 == 1)
 		player = PlayerOne;
 	else
@@ -201,6 +201,7 @@ char GameManager::playTurn(SDLManager *SDLMan) {
     }
 	if (!skipPlace)
 		this->grid[place] = ((this->turn + 1) % 2) + 1;
+	printf("%d\n", this->canCapture);
 	if (this->canCapture)
 		player->increasePoint(capture(&this->grid, place));
 	this->printGrid(SDLMan);
@@ -239,7 +240,7 @@ void GameManager::debugGrid(std::map<unsigned short int, char> &grid) {
 }
 
 void GameManager::debugGrid(void) {
-    if (grid.empty()) return ;    
+    if (grid.empty()) return ;
     std::cout << "=================== DEBUG GRID ================" << std::endl;
     std::cout << "   : 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8" << std::endl;
     for (char x = 0; x < 19; x++) {
@@ -272,21 +273,21 @@ APlayer& GameManager::getPlayer(char which) {
 	return *this->PlayerTwo;
 }
 
-char GameManager::capture(std::map<unsigned short int, char> *grid, unsigned short int place) {
+char GameManager::capture(std::map<unsigned short int, char> *grid, unsigned short int place, char replace) {
 	char res = 0;
 
-    res += checkCapture(grid, place, 256);
-	res += checkCapture(grid, place, 255);
-	res += checkCapture(grid, place, 257);
-	res += checkCapture(grid, place, 65535);
-	res += checkCapture(grid, place, 1);
-	res += checkCapture(grid, place, 0xFF00);
-	res += checkCapture(grid, place, 0xFF01);
-	res += checkCapture(grid, place, 0xFEFF);
+    res += checkCapture(grid, place, 256, replace);
+	res += checkCapture(grid, place, 255, replace);
+	res += checkCapture(grid, place, 257, replace);
+	res += checkCapture(grid, place, 65535, replace);
+	res += checkCapture(grid, place, 1, replace);
+	res += checkCapture(grid, place, 0xFF00, replace);
+	res += checkCapture(grid, place, 0xFF01, replace);
+	res += checkCapture(grid, place, 0xFEFF, replace);
 	return res;
 }
 
-char GameManager::checkCapture(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir) {
+char GameManager::checkCapture(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, char replace) {
 	unsigned short tmp = place + dir * 3;
 
 	if ((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 || (tmp >> 8) < 0 || (tmp >> 8) > 18 ||
@@ -295,9 +296,31 @@ char GameManager::checkCapture(std::map<unsigned short int, char> *grid, unsigne
 		3 - (*grid)[place] != (*grid)[place + dir * 2]
 	)
 		return 0;
-	(*grid)[place + dir] = 0;
-	(*grid)[place + dir * 2] = 0;
+	(*grid)[place + dir] = replace;
+	(*grid)[place + dir * 2] = replace;
 	return 2;
+}
+
+void GameManager::undoCapture(std::map<unsigned short int, char> *grid, unsigned short int place, char replace) {
+    removeCapture(grid, place, 256, replace);
+	removeCapture(grid, place, 255, replace);
+	removeCapture(grid, place, 257, replace);
+	removeCapture(grid, place, 65535, replace);
+	removeCapture(grid, place, 1, replace);
+	removeCapture(grid, place, 0xFF00, replace);
+	removeCapture(grid, place, 0xFF01, replace);
+	removeCapture(grid, place, 0xFEFF, replace);
+}
+
+void GameManager::removeCapture(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, char replace) {
+	unsigned short tmp = place + dir * 3;
+
+	if (!((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 || (tmp >> 8) < 0 || (tmp >> 8) > 18 ||
+		(*grid)[tmp] != (*grid)[place] ||
+		3 != (*grid)[place + dir] || 3 != (*grid)[place + dir * 2])
+	)
+		(*grid)[place + dir] = 3 - (*grid)[place];
+		(*grid)[place + dir * 2] = 3 - (*grid)[place];
 }
 
 unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char>&grid, Vec from, Vec to, Vec dir, char value, Vec skip) {

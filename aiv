@@ -1,5 +1,6 @@
 n # STANDAR MODE
-n # Capture Mode
+y # Capture Mode
+y # Capture Mode
 y # No double-threes
 n # Player 1 if n == AI
 player1
