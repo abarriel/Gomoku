@@ -29,21 +29,22 @@ bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned shor
 static std::vector<std::vector<int>> mvs(4);
 std::atomic_bool run(true);
 std::atomic_bool score_done(false);
+std::atomic_bool score_done4(false);
 
 unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char value, char mode, bool noDouble = true) const {
 	auto realStart = std::chrono::high_resolution_clock::now();
 	bool jcp2;
     std::vector<std::future<int>> thread(4);
-    char currentPoint, enemyPoint, currentThread, check;
+    char currentPoint, enemyPoint, check, check4;
     std::map<unsigned short, char> grid1, grid2, grid3;
-    unsigned short ret[] = {0, 0, 0, 0};
+    bool config2score = false;
+    unsigned short ret[] = {0, 0, 0, 0, 0};
 
     if (grid.empty()) return (0x909);
     for (size_t i = 0; i < mvs.size(); i++) {
         mvs[i].clear();
     }
     check = 0;
-    currentThread = 0;
     currentPoint = this->getPoint();
     enemyPoint = GameManager::instance()->otherPoint(this->getPoint());
 
@@ -58,7 +59,12 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     for(int mov: mvs[0]) {
         std::cout << "\ts:" << (mov >> 16)  << " "<< mov << std::endl;
     }
-    if (generateAttackLength == 2) {
+
+    if (config2score) {
+        mvs[1].insert(mvs[1].begin(), mvs[0].begin(), mvs[0].begin() + (mvs[0].size() / 2));
+        mvs[0].erase(mvs[0].begin(), mvs[0].begin() + (mvs[0].size() / 2)); // lazyy        
+        mvs[2] = mvs[0];
+    } else if (generateAttackLength == 2) {
         mvs[1].push_back(mvs[0].at(0));
         mvs[2].push_back(mvs[0].at(1));
     } else if (generateAttackLength == 1) {
@@ -70,31 +76,34 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         mvs[0].erase(mvs[0].begin(), mvs[0].begin() + size); // lazyy
         mvs[3] = mvs[0];
     }
-    if (generateAttackLength >= 3)
-        currentThread = 3;
-    else if (generateAttackLength == 1)
-        currentThread = 1;
-    else if (generateAttackLength == 2)
-        currentThread = 2;
     grid1 = grid;
     grid2 = grid;
     grid3 = grid;
     auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(ret[0]), -100000000, 100000000);
+        auto getScore4 = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 4, std::ref(ret[4]), -100000000, 100000000);
     auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid1), value, mode, noDouble, currentPoint, enemyPoint, 10, std::ref(ret[1]), -100000000, 100000000, 1);
     auto res2 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid2), value, mode, noDouble, currentPoint, enemyPoint, 10, std::ref(ret[2]), -100000000, 100000000, 2);
-    auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid3), value, mode, noDouble, currentPoint, enemyPoint, 10, std::ref(ret[3]), -100000000, 100000000, 3);
+    // auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid3), value, mode, noDouble, currentPoint, enemyPoint, 10, std::ref(ret[3]), -100000000, 100000000, 3);
 
 	auto startAlgo = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds ms(500);
 	auto start = std::chrono::high_resolution_clock::now() + ms;
-    while (std::chrono::high_resolution_clock::now() <= start)
+    while (std::chrono::high_resolution_clock::now() <= start) {
         if (score_done)
             check = 1;
+        if (score_done4)
+            check4 = 1;
+    }
     run = false;
+    try {
+        getScore4.get();
+    } catch (std::runtime_error &e) {
+        std::cout << "\t(4)getScore4 abort" << std::endl;
+    }
     try {
         getScore.get();
     } catch (std::runtime_error &e) {
-        std::cout << "getScore is too long" << std::endl;
+        std::cout << "(2)getScore abort" << std::endl;
     }
     try {
         if (res1.get() != 2) ret[1] = 0;
@@ -108,14 +117,16 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         ret[2] = 0;
         // std::cout << "getAttack is too long" << std::endl;
     }
-    try {
-        if (res3.get() != 2) ret[3] = 0;
-    } catch (std::runtime_error &e) {
-        ret[3] = 0;
-        // std::cout << "getAttack is too long" << std::endl;
-    }
+    // try {
+    //     if (res3.get() != 2) ret[3] = 0;
+    // } catch (std::runtime_error &e) {
+    //     ret[3] = 0;
+    //     // std::cout << "getAttack is too long" << std::endl;
+    // }
+    if (check4)
+        std::cout << "\t!!!!!!getScore(4) " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetScore (ontime?)" << (int)check << " " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
-    if (!check && !ret[1] && !ret[2] && !ret[3]) {
+    if (!check && !check4 && !ret[1] && !ret[2] && !ret[3]) {
         mvs[0].clear();
         std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
         BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
@@ -130,10 +141,13 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     if (ret[2]) std::cout << "\tgetAttack(2): " << ret[2] <<  " (" << ((ret[2] & 0xFFFF) >> 8) <<","<< (ret[2] & 0xFF) <<")"<<std::endl;
     if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
+    if (check4 && check)
+        ret[0] = ret[4];
     std::cout << "\tchoose: " << ret[0] << std::endl;
     std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms "<< std::fixed <<  std::setprecision(2) << std::chrono::duration<double, std::milli>(end - realStart).count() / 1000 << " s \n";
     run = true;
     score_done = false;
+    score_done4 = false;
     return ret[0];
     }
 
@@ -354,6 +368,8 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	// }
     if (depth == MAX_DEPTH)
         score_done = true;
+    if (depth == 4)
+        score_done4 = true;
 	return tmpScore;
 }
 
