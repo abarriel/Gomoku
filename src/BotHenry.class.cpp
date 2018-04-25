@@ -59,7 +59,6 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     std::size_t const generateAttackLength = mvs[0].size();
     std::size_t const size = round((generateAttackLength / 3));
 
-    std::cout << " orignal: " << generateAttackLength << " split: " << size  << " lol: " << std::endl;
     // for(int mov: mvs[0]) {
     //     std::cout << "\ts:" << (mov >> 16)  << " "<< mov << std::endl;
     // }
@@ -100,7 +99,6 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         if (getScore_isdone)
             check = 1;
     run = false;
-    std::cout << (int)check << std::endl;
     try {
         getScore.get();
     } catch (std::runtime_error &e) {
@@ -120,7 +118,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
         res = mvs[0].at(0) & 0xFFFF;
     } else if (pos1 || pos2 || pos3) {
-        std::cout << "getScore was slow but not the attack" << std::endl;
+        std::cout << "attack is ready" << std::endl;
         if(pos1) res = pos1;
         else if(pos2) res = pos2;
         else if(pos3) res = pos3;
@@ -280,7 +278,7 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
     if (!run) throw std::runtime_error("timeout");
 	if (oponentPoint >= 10)
         return 10000;
-	if (GameManager::checkBoard(&grid, GameManager::instance()->getEnding())))
+	if (GameManager::checkBoard(&grid, GameManager::instance()->getEnding()))
 		return 10000;
 	if (depth == 0)
 		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore() + 300 * currentPoint + 300 * oponentPoint;
