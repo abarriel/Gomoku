@@ -1,5 +1,5 @@
 #include "BotHenry.class.hpp"
-# define MAX_DEPTH 2
+# define MAX_DEPTH 4
 
 BotHenry::BotHenry( std::string nm ) : APlayer(nm) {
     // this
@@ -33,10 +33,9 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     char currentPoint, enemyPoint;
     unsigned short res, pos1, pos2, pos3, pos4;
     bool getScore_isdone = false;
-    double timeLeft = 0.5;
     char currentThread;
     char check;
-
+    bool jcp = true;
     std::vector<std::future<int>> thread(4);
     // <std::shared_future<int>> thread(4);
 
@@ -88,54 +87,48 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     //     }
     // }
 
-    thread[0] = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(res), -100000000, 100000000, std::ref(getScore_isdone));
-    if (generateAttackLength >= 3) {
-        std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos1), -100000000, 100000000, 1);
-       std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos2), -100000000, 100000000, 2);
-        std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos3), -100000000, 100000000, 3);
-    } else if (generateAttackLength == 1) {
-        std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos1), -100000000, 100000000, 1);
-    } else if (generateAttackLength == 2) {
-        std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos1), -100000000, 100000000, 1);
-        std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(pos2), -100000000, 100000000, 2);
-    }
+   auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(res), -100000000, 100000000, std::ref(getScore_isdone));
+    // if (generateAttackLength >= 3) {
+        // std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
+    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
+    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos3), -100000000, 100000000, 3);
+    // } else if (generateAttackLength == 1) {
+    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
+    // } else if (generateAttackLength == 2) {
+    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
+    //     std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
+    // }
 
-	auto start = std::chrono::high_resolution_clock::now();
-    while (timeLeft >= 0) {
-        auto endLoop = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> diff = endLoop - start;
-        if (getScore_isdone) {
+    std::chrono::milliseconds ms(600);
+	auto start = std::chrono::high_resolution_clock::now() + ms;
+    while (std::chrono::high_resolution_clock::now() <= start)
+        if (getScore_isdone)
             check = 1;
-            break;            
-        }
-        timeLeft = timeLeft - diff.count();
-    }
     run = false;
-    try {
-        // for (int i = 0; i < currentThread; i++)
-        // if(!check)
-            // getScore.get();
-    } catch (std::runtime_error &e) {
-        // std::cout << "too loong" << std::endl;
-    }
     std::cout << (int)check << std::endl;
-    if (!(check && pos1 && pos2 && pos3 && pos4)) {
-        mvs[0].clear();
-        std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
-        BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
-        res = mvs[0].at(0) & 0xFFFF;
-    } else if (!check) {
-        std::cout << "getScore was slow but not the attack" << std::endl;
-        if(pos1) res = pos1;
-        if(pos2) res = pos2;
-        if(pos3) res = pos3;
+    try {
+        getScore.get();
+    } catch (std::runtime_error &e) {
+        std::cout << "getScore is too long" << std::endl;
     }
-    std::cout << "\tgetScore (finish on time?) "<< (int)check <<  " (" << ((res & 0xFFFF) >> 8) <<","<< (res & 0xFF) <<")"<<std::endl;
+    // if (!(check && pos1 && pos2 && pos3 && pos4)) {
+    //     mvs[0].clear();
+    //     std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
+    //     BotHenry::generateMove(grid, mvs[0], value, mode, noDouble, MAX_DEPTH);
+    //     res = mvs[0].at(0) & 0xFFFF;
+    // } else if (!check) {
+    //     std::cout << "getScore was slow but not the attack" << std::endl;
+    //     if(pos1) res = pos1;
+    //     if(pos2) res = pos2;
+    //     if(pos3) res = pos3;
+    // }
+    std::cout << "\tgetScore (finish on time?) "<< (int)check << " " << res << " (" << ((res & 0xFFFF) >> 8) <<","<< (res & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetAttack(1): " << pos1 << " (" << ((pos1 & 0xFFFF) >> 8) <<","<< (pos1 & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetAttack(2): " << pos2 <<  " (" << ((pos2 & 0xFFFF) >> 8) <<","<< (pos2 & 0xFF) <<")"<<std::endl;
     std::cout << "\tgetAttack(3): " << pos3 << " (" << ((pos3 & 0xFFFF) >> 8) <<","<< (pos3 & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms\n";
+    // exit(1);
     std::cout << "chooseen cout: " << res << std::endl;
     return res;
     }
