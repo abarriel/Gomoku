@@ -87,9 +87,7 @@ char Heuristic::isAtack(bool isMe) {
 	int oponent = (3 - this->id) - 1;
 
 	if (isMe) {
-		if (this->p[oponent].five)
-			return 0;
-		else if (this->p[me].five || this->p[me].fourFree)
+		if (this->p[me].five || this->p[me].fourFree || this->p[me].fourHalf + this->p[me].threeFree > 1)
 			return 2;
 		else if (this->p[me].threeFree)
 			return 1;
@@ -211,7 +209,7 @@ std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) { // the wors
         std::cout << "\tfive: " << i.getPlayerdata(0).five << std::endl;
     if (i.getPlayerdata(1).threeHalf || i.getPlayerdata(1).threeFree || i.getPlayerdata(1).fourHalf || i.getPlayerdata(1).fourFree || i.getPlayerdata(1).five)
         std::cout << " P2 ->" << std::endl;
-    if (i.getPlayerdata(1).threeHalf || i.getPlayerdata(1).threeFree)    
+    if (i.getPlayerdata(1).threeHalf || i.getPlayerdata(1).threeFree)
         std::cout << "\t3half: " << i.getPlayerdata(1).threeHalf << " 3free: " <<	i.getPlayerdata(1).threeFree << std::endl;
     if (i.getPlayerdata(1).fourHalf || i.getPlayerdata(1).fourFree)
         std::cout << "\t4half: " << i.getPlayerdata(1).fourHalf << " 4free: " <<	i.getPlayerdata(1).fourFree << std::endl;
