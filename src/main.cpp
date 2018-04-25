@@ -33,6 +33,7 @@ int main( int argc, char const **argv )
 				}
 			}
 		} catch (std::exception &e) {
+            std::cout << e.what() << std::endl;
 			quit = true;
 		}
     }
