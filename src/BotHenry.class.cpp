@@ -199,6 +199,7 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
 void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth, bool &flag) {
 	char tmp;
 	bool eated = false;
+	char wining = 1;
 
     for (char x = 0; x < 19; x++)
 		for (char y = 0; y < 19; y++) {
@@ -212,10 +213,10 @@ void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<
 				grid[(y << 8) + x] = value;
                 tmp = Heuristic(grid, GameManager::instance()->getHistory(), value, 0).run().isAtack((depth + 1) % 2);
 				grid[(y << 8) + x] = (eated ? 3 : 0);
-                if (tmp ==  2 && depth % 2 == 0) {
+                if (tmp > wining && depth % 2 == 0) {
                     moves.clear();
                     moves.push_back((2 << 16) + ((y << 8) + x));
-					return ;
+					wining = tmp;
 				}
 				if (tmp == 1) {
                     moves.insert(std::upper_bound(moves.begin(), moves.end(), (1 << 16) + ((y << 8) + x), [](const int& lhs, const int& rhs ) {
@@ -367,6 +368,12 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
         moves = mvs[already];
     }
 	for(int mov: (moves)) {
+		if (depth == 10){
+			BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
+			std::cout << "+++++++++++++++++++++++++++++++++" << '\n' << "get : " << (int)attackValue << '\n';
+			GameManager::debugGrid(grid);
+			BotHenry::undoPlay(grid, mov & 0xFFFF);
+		}
 		if ((mov >> 16) == 2 && depth % 2 == 0) {		//si l'attaquant a win
 			pos = mov & 0xFFFF;
 			return 2;
@@ -375,10 +382,6 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 			return 0;
 		BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
 		attackValue = getAttack(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -(alpha + 1), -alpha, 0);
-		if (depth == 10){
-			std::cout << "+++++++++++++++++++++++++++++++++" << '\n' << "get : " << (int)attackValue << '\n';
-			GameManager::debugGrid(grid);
-		}
 		if (attackValue == 2 && depth % 2 == 0) {
 			pos = mov & 0xFFFF;            //si l'attaque marche
 			grid[mov & 0xFFFF] = 0;

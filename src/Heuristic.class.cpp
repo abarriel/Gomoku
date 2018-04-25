@@ -87,7 +87,11 @@ char Heuristic::isAtack(bool isMe) {
 	int oponent = (3 - this->id) - 1;
 
 	if (isMe) {
-		if (this->p[me].five || this->p[me].fourFree || this->p[me].fourHalf + this->p[me].threeFree > 1)
+		if (this->p[me].five)
+			return 4;
+		if (this->p[me].fourFree && this->p[oponent].fourHalf + this->p[oponent].fourFree == 0)
+			return 3;
+		if (this->p[me].fourHalf + this->p[me].threeFree > 1 && this->p[oponent].fourHalf + this->p[oponent].fourFree == 0)
 			return 2;
 		else if (this->p[me].threeFree)
 			return 1;
