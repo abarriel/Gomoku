@@ -87,7 +87,9 @@ char Heuristic::isAtack(bool isMe) {
 	int oponent = (3 - this->id) - 1;
 
 	if (isMe) {
-		if (this->p[me].five > 0 || this->p[me].fourFree)
+		if (this->p[oponent].five)
+			return 0;
+		else if (this->p[me].five || this->p[me].fourFree)
 			return 2;
 		else if (this->p[me].threeFree)
 			return 1;
@@ -186,7 +188,7 @@ void Heuristic::countLine( void ) {
 	for (char x = 0; x < 19; x++) {
 		for (char y = 0; y < 19; y++) {
 			cur = y * 256 + x;
-			if (this->grid[cur] != 0) {
+			if (this->grid[cur] != 0 && this->grid[cur] != 3) {
 				this->seqToLine(cur, 1);
 				this->seqToLine(cur, 256);
 				this->seqToLine(cur, 257);

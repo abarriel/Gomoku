@@ -36,7 +36,8 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     bool getScore_isdone = false;
     char currentThread;
     char check;
-    bool jcp = true;
+	bool jcp = true;
+    bool jcp2 = true;
     std::vector<std::future<int>> thread(4);
     // <std::shared_future<int>> thread(4);
 
@@ -54,7 +55,8 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     currentPoint = this->getPoint();
     enemyPoint = GameManager::instance()->otherPoint(this->getPoint());
 
-	BotHenry::generateAttack(grid, mvs[0], value, mode, noDouble, 10);
+
+	BotHenry::generateAttack(grid, mvs[0], value, mode, noDouble, 10, jcp2);
 
     std::size_t const generateAttackLength = mvs[0].size();
     std::size_t const size = round((generateAttackLength / 3));
@@ -197,7 +199,7 @@ void BotHenry::generateMove(std::map<unsigned short, char> &grid, std::vector<in
         }
 }
 
-void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth) {
+void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth, bool &flag) {
 	char limitScore = 0;
 	char tmp;
 
@@ -220,6 +222,7 @@ void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<
 				}
 				if (tmp == 0 && depth % 2) {
 					moves.clear();
+					flag = false;
 					return ;
 				}
             }
@@ -258,12 +261,12 @@ void BotHenry::generateAttack(std::map<unsigned short, char> &grid, std::vector<
 // 	return alpha;
 // }
 
-char simulatePlay(std::map<unsigned short, char> &grid, unsigned short &pos, char value) {
+char BotHenry::simulatePlay(std::map<unsigned short, char> &grid, unsigned short pos, char value) {
 	grid[pos] = value;
 	return (GameManager::capture(&grid, pos, 3));
 }
 
-char undoPlay(std::map<unsigned short, char> &grid, unsigned short &pos, char value) {
+char BotHenry::undoPlay(std::map<unsigned short, char> &grid, unsigned short pos) {
 	GameManager::capture(&grid, pos, 3);
 	grid[pos] = 0;
 }
@@ -291,15 +294,16 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	// }
 	// std::cout << moves.size() << '\n';
 	grid[moves.front() & 0xFFFF] = value;
+	BotHenry::simulatePlay(grid, moves.front() & 0xFFFF, value);
 	tmpScore = -getScore(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -beta, -alpha, is_done);
-	pos = moves.front()  & 0xFFFF;
-	grid[moves.front() & 0xFFFF] = 0;
+	pos = moves.front() & 0xFFFF;
+	BotHenry::undoPlay(grid, moves.front() & 0xFFFF);
 	moves.erase(moves.begin());
 	if (tmpScore >= alpha)
 		alpha = tmpScore;
 	if (tmpScore < beta)
 		for(int mov: (moves)) {
-			grid[mov & 0xFFFF] = value;
+			BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
 			currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, currentPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha, is_done);
 			// if (currentRating > 40000)
 			// 	return 40001;
@@ -322,7 +326,7 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 				// }
 				// currentRating = -currentRating;
 			}
-			grid[mov & 0xFFFF] = 0;
+			BotHenry::undoPlay(grid, mov & 0xFFFF);
 			if (currentRating > tmpScore)
 			{
 				tmpScore = currentRating;
@@ -363,7 +367,7 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 	if (depth == 0)
 		return 0;
     if (!already)
-        BotHenry::generateAttack(grid, moves, value, mode, noDouble, depth);
+        BotHenry::generateAttack(grid, moves, value, mode, noDouble, depth, flag);
     else {
         if (mvs[already].empty()) return 0;
         moves = mvs[already];
@@ -375,19 +379,17 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 		}
 		if ((mov >> 16) == 0 && depth % 2)			//si le defenseur a win
 			return 0;
-		grid[mov & 0xFFFF] = value;
+		BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
 		attackValue = getAttack(grid, 3 - value, mode, noDouble, 0, 0, depth - 1, oponentPlace, -(alpha + 1), -alpha, 0);
 		if (attackValue == 2 && depth % 2 == 0) {
 			pos = mov & 0xFFFF;            //si l'attaque marche
 			grid[mov & 0xFFFF] = 0;
 			return 2;
 		} else if (attackValue != 2) {
-			if (depth == 7)
-				std::cout << (mov & 0xFFFF) << '\n';
 			flag = false;
 		} else if (attackValue == 0 && depth % 2)
 			return 0;
-		grid[mov & 0xFFFF] = 0;
+		BotHenry::undoPlay(grid, mov & 0xFFFF);
 	}
 	if (flag == true && depth % 2)
 		return 2;

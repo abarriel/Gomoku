@@ -21,7 +21,7 @@ struct resThread{
 };
 
 class BotHenry : public APlayer{
-    
+
 	public:
 		BotHenry( std::string name );
 		BotHenry( void );
@@ -29,10 +29,13 @@ class BotHenry : public APlayer{
         static void popScore(std::map<unsigned short, char> &grid, unsigned short pos, unsigned short dir, char &bestMoveScore);
 
 		static void generateMove(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth);
-        static void generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth);
+        static void generateAttack(std::map<unsigned short, char> &grid, std::vector<int> &moves, char &value, char &mode, bool &noDouble, char depth, bool &flag);
 
 		virtual unsigned short int play( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
 		virtual unsigned short int debugPlay( std::map<unsigned short int, char> grid, char value, char mode, bool noDouble ) const;
+
+		static char undoPlay(std::map<unsigned short, char> &grid, unsigned short pos);
+		static char simulatePlay(std::map<unsigned short, char> &grid, unsigned short pos, char value);
 
 		static int getScore(std::map<unsigned short int, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta, bool &is_done);
         static int getAttack(std::map<unsigned short, char> &grid, char value, char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsigned short &pos, int alpha, int beta, char already);

@@ -335,7 +335,7 @@ unsigned short int GameManager::SeqFromTo(std::map<unsigned short, char>&grid, u
 	while (from != to + dir) {
 		res = res << 2;
 		if ((from & 0xFF) >= 0 && (from & 0xFF) <= 18 && (from >> 8)>= 0 && (from >> 8)<= 18) {
-			if (grid[from]) {
+			if (grid[from] && grid[from] != 3) {
 				if (grid[from] == value)
 					res += 1;
 				else
@@ -449,7 +449,7 @@ char GameManager::checkPosVictory(std::map<unsigned short int, char> *grid, unsi
 char GameManager::checkFiveRe(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, bool ending = true) {
 	unsigned short tmp;
 
-	if ((*grid)[place] == 0)
+	if ((*grid)[place] == 0 || (*grid)[place] == 3)
 		return 0;
     while ((*grid)[place] == (*grid)[place - dir])
         place = place - dir;
@@ -469,7 +469,7 @@ char GameManager::checkFiveRe(std::map<unsigned short int, char> *grid, unsigned
 char GameManager::checkFive(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, bool ending = true) {
 	unsigned short tmp = place + dir * 4;
 
-	if ((*grid)[place] == 0)
+	if ((*grid)[place] == 0 || (*grid)[place] == 3)
 		return 0;
 	if ((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 ||(tmp >> 8) < 0 || (tmp >> 8) > 18 ||
 		(*grid)[place] != (*grid)[tmp] ||
