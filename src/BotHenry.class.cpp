@@ -30,6 +30,7 @@ static std::vector<std::vector<int>> mvs(4);
 std::atomic_bool run(true);
 
 unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char value, char mode, bool noDouble = true) const {
+	auto realStart = std::chrono::high_resolution_clock::now();
     char currentPoint, enemyPoint;
     unsigned short res, pos1, pos2, pos3, pos4;
     bool getScore_isdone = false;
@@ -87,11 +88,12 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     //     }
     // }
 
-   auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(res), -100000000, 100000000, std::ref(getScore_isdone));
+    auto getScore = std::async(std::launch::async, &BotHenry::getScore, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, MAX_DEPTH, std::ref(res), -100000000, 100000000, std::ref(getScore_isdone));
     auto res1 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos1), -100000000, 100000000, 1);
     auto res2 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos2), -100000000, 100000000, 2);
     auto res3 = std::async(std::launch::async, &BotHenry::getAttack, std::ref(grid), value, mode, noDouble, currentPoint, enemyPoint, 8, std::ref(pos3), -100000000, 100000000, 3);
 
+	auto startAlgo = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds ms(600);
 	auto start = std::chrono::high_resolution_clock::now() + ms;
     while (std::chrono::high_resolution_clock::now() <= start)
@@ -128,7 +130,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     std::cout << "\tgetAttack(3): " << pos3 << " (" << ((pos3 & 0xFFFF) >> 8) <<","<< (pos3 & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "chooseen cout: " << res << std::endl;
-    std::cout << std::chrono::duration<double, std::milli>(end - start).count() << " ms\n";
+    std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms thread: "<< std::chrono::duration<double, std::milli>(end - realStart).count() << " ms \n";
     // exit(1);
     run = true;
     return res;
