@@ -24,6 +24,7 @@ class SDLManager {
 		SDL_Renderer* MainRenderer;
 		SDL_Texture* WhiteRock;
 		SDL_Texture* BlackRock;
+		SDL_Texture* wouldPlay;
   		SDL_Texture* Background;
 
 };

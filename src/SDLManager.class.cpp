@@ -11,20 +11,26 @@ SDLManager::SDLManager( void ) {
     SDL_Surface *board = IMG_Load("img/board.png");
     SDL_Surface *black = IMG_Load("img/black.png");
     SDL_Surface *white = IMG_Load("img/white.png");
+    SDL_Surface *wouldPlay = IMG_Load("img/wouldPlay.png");
 	if (board == 0)
 		return;
-    SDL_SetColorKey(board, 1, SDL_MapRGB(board->format, 0, 0, 0));
+    SDL_SetColorKey(board, 0, SDL_MapRGB(board->format, 0, 0, 0));
 	this->Background = SDL_CreateTextureFromSurface(this->MainRenderer, board);
 	// SDL_FreeSurface(img);
 	if (black == 0)
 		return;
-    SDL_SetColorKey(black, 1, SDL_MapRGB(black->format, 0, 0, 0));
+    SDL_SetColorKey(black, 0, SDL_MapRGB(black->format, 0, 0, 0));
 	this->BlackRock = SDL_CreateTextureFromSurface(this->MainRenderer, black);
 	// SDL_FreeSurface(img);
     if (white == 0)
 		return;
-    SDL_SetColorKey(white, 1, SDL_MapRGB(white->format, 0, 0, 0));
+    SDL_SetColorKey(white, 0, SDL_MapRGB(white->format, 0, 0, 0));
 	this->WhiteRock = SDL_CreateTextureFromSurface(this->MainRenderer, white);
+
+    if (wouldPlay == 0)
+		return;
+    SDL_SetColorKey(wouldPlay, 0, SDL_MapRGB(wouldPlay->format, 0, 0, 0));
+	this->wouldPlay = SDL_CreateTextureFromSurface(this->MainRenderer, wouldPlay);
 	// SDL_FreeSurface(img);
 	SDL_RenderCopy(this->MainRenderer, this->Background, NULL, NULL);
 }
@@ -41,8 +47,11 @@ void SDLManager::placeRock(int color, Vec vec) {
              break;
     	case 2 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
              break;
+        case 4 : SDL_RenderCopy(this->MainRenderer, this->wouldPlay, NULL, &pos);
+             break;
 		default : break;
 	}
+    // SDL_SetColorKey(this->Background, 1, SDL_MapRGB(this->Background->format, 0, 0, 0));
 }
 
 void SDLManager::placeRock(int color, unsigned short int point) {
@@ -56,6 +65,8 @@ void SDLManager::placeRock(int color, unsigned short int point) {
     	case 1 : SDL_RenderCopy(this->MainRenderer, this->BlackRock, NULL, &pos);
              break;
     	case 2 : SDL_RenderCopy(this->MainRenderer, this->WhiteRock, NULL, &pos);
+             break;
+        case 4 : SDL_RenderCopy(this->MainRenderer, this->wouldPlay, NULL, &pos);
              break;
 		default : break;
 	}
@@ -73,7 +84,6 @@ void SDLManager::render() {
 
 
 SDLManager::~SDLManager( void ) {
-	std::cout << "Destroy" << std::endl;
 	SDL_DestroyTexture(this->BlackRock);
 	SDL_DestroyTexture(this->WhiteRock);
 	SDL_DestroyTexture(this->Background);

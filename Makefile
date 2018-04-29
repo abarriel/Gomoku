@@ -15,10 +15,11 @@ INCDIR = includes
 
 # SOURCES
 LIB =
-SRC = main.cpp SDLManager.class.hpp SDLManager.class.cpp Vec.class.hpp Vec.class.cpp \
-		GameManager.class.hpp GameManager.class.cpp APlayer.class.hpp APlayer.class.cpp \
-		Human.class.hpp Human.class.cpp BotHenry.class.hpp BotHenry.class.cpp \
-		Heuristic.class.hpp Heuristic.class.cpp
+SRC = main.cpp SDLManager.class.cpp Vec.class.cpp \
+		GameManager.class.cpp APlayer.class.cpp \
+		Human.class.cpp BotHenry.class.cpp \
+		 Heuristic.class.cpp \
+		HumanHelp.class.cpp
 
 
 # **************************************************************************** #

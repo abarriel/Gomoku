@@ -1,20 +1,47 @@
-#include "Human.class.hpp"
+#include "HumanHelp.class.hpp"
+// #include "B.class.hpp"
 
-Human::Human( std::string nm ) : APlayer(nm) {
+HumanHelp::HumanHelp( std::string nm ) : APlayer(nm) {
 	return;
 }
 
-Human::Human( void ) : APlayer() {
+HumanHelp::HumanHelp( void ) : APlayer() {
 	return;
 }
 
-Human::~Human( void ) {
+HumanHelp::~HumanHelp( void ) {
 	return;
 }
 
-unsigned short int Human::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
+unsigned short int HumanHelp::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
 	SDL_Event event;
-	std::cout << "Human " << this->getName();
+    unsigned short nextMove;
+	unsigned short ret;
+
+    if (grid.empty()) return (0x909);
+    BotHenry::getScore(grid, value, mode, noDouble, this->getPoint(), GameManager::instance()->otherPoint(this->getPoint()), 2, ret, -100000000, 100000000);
+    nextMove = grid[ret];
+    grid[ret] = 4;
+    GameManager::instance()->printGrid(grid);
+    grid[ret] = nextMove;
+    nextMove = 0;
+	GameManager::instance()->getSDl()->render();
+	while (1) {
+		SDL_WaitEvent(&event);
+		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT) {
+	    	throw std::exception();
+        }
+        nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
+        if (this->goodInput(&grid, value, &event, mode, noDouble))
+                break ;
+	}
+    std::cout << "AI would have play: (" << (ret & 0xFF) << "," <<  (ret >> 8)  << "). Human play (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
+	return nextMove;
+}
+
+unsigned short int HumanHelp::debugPlay(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
+	SDL_Event event;
+	std::cout << "HumanHelp " << this->getName();
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
@@ -29,24 +56,7 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
 	return nextMove;
 }
 
-unsigned short int Human::debugPlay(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
-	SDL_Event event;
-	std::cout << "Human " << this->getName();
-    unsigned short nextMove;
-	while (1) {
-		SDL_WaitEvent(&event);
-		if (event.key.keysym.sym == SDLK_ESCAPE || event.type == SDL_QUIT) {
-	    	throw std::exception();
-        }
-        nextMove = ((event.button.x - 46) / 60) + ((event.button.y - 46) / 60) * 256;
-        if (this->goodInput(&grid, value, &event, mode, noDouble))
-                break ;
-	}
-    std::cout << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
-	return nextMove;
-}
-
-bool Human::goodAwnser(SDL_Event *event) {
+bool HumanHelp::goodAwnser(SDL_Event *event) {
 	if (event->key.type == SDL_KEYDOWN &&
 		(event->key.keysym.scancode == SDL_SCANCODE_Y || event->key.keysym.scancode == SDL_SCANCODE_N) &&
 		event->key.windowID == 1
@@ -55,7 +65,7 @@ bool Human::goodAwnser(SDL_Event *event) {
 	return false;
 }
 
-bool Human::wantSwap( std::map<unsigned short int, char> grid ) const {
+bool HumanHelp::wantSwap(std::map<unsigned short int, char> grid) const {
 	SDL_Event event;
 
 	(void)grid;
@@ -70,7 +80,7 @@ bool Human::wantSwap( std::map<unsigned short int, char> grid ) const {
 	return false;
 }
 
-bool Human::wantDoublePlay( std::map<unsigned short int, char> grid ) const {
+bool HumanHelp::wantDoublePlay(std::map<unsigned short int, char> grid) const {
 	SDL_Event event;
 
 	(void)grid;
@@ -85,7 +95,7 @@ bool Human::wantDoublePlay( std::map<unsigned short int, char> grid ) const {
 	return false;
 }
 
-bool Human::goodInput(std::map<unsigned short, char> *grid, char value, SDL_Event *event, char mode, bool noDouble = true) {
+bool HumanHelp::goodInput(std::map<unsigned short, char> *grid, char value, SDL_Event *event, char mode, bool noDouble = true) {
 	unsigned short int pos;
 
 	if (event->button.type == SDL_MOUSEBUTTONDOWN &&
