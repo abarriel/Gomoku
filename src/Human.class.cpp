@@ -14,7 +14,6 @@ Human::~Human( void ) {
 
 unsigned short int Human::play(std::map<unsigned short int, char> grid, char value, char mode, bool noDouble = true) const {
 	SDL_Event event;
-	std::cout << "Human " << this->getName();
     unsigned short nextMove;
 	while (1) {
 		SDL_WaitEvent(&event);
@@ -25,7 +24,7 @@ unsigned short int Human::play(std::map<unsigned short int, char> grid, char val
         if (this->goodInput(&grid, value, &event, mode, noDouble))
                 break ;
 	}
-    std::cout << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
+    std::cout << "Human " << this->getName() << " play: (" << (nextMove & 0xFF) << "," <<  (nextMove >> 8)  << ")" << std::endl;
 	return nextMove;
 }
 

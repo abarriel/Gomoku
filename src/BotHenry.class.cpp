@@ -145,8 +145,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     auto end = std::chrono::high_resolution_clock::now();
     if (check4 && check)
         ret[0] = ret[4];
-    std::cout << "\tchoose: " << ret[0] << std::endl;
-    std::cout << std::chrono::duration<double, std::milli>(end - startAlgo).count() << " ms "<< std::fixed <<  std::setprecision(2) << std::chrono::duration<double, std::milli>(end - realStart).count() / 1000 << " s \n";
+    std::cout << "AI play (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) << ") in " << std::fixed <<  std::setprecision(2) << std::chrono::duration<double, std::milli>(end - startAlgo).count() / 1000 << "s ("<< std::chrono::duration<double, std::milli>(end - startAlgo).count() << "ms)" << std::endl;
     run = true;
     score_done = false;
     score_done4 = false;
