@@ -1,5 +1,7 @@
 #include "Heuristic.class.hpp"
 
+int Heuristic::capturePoint = 600;
+
 Heuristic::~Heuristic( void ) {
 
 	return;
@@ -24,6 +26,15 @@ Heuristic& Heuristic::run() {
     return *this;
 }
 
+int Heuristic::getCapturePoint() {
+	return Heuristic::capturePoint; }
+
+void Heuristic::increaseCapturePoint() {
+	Heuristic::capturePoint += 10; }
+
+void Heuristic::setCapturePoint() {
+	Heuristic::capturePoint = 600; }
+
 int Heuristic::linePoint(int firInPlay, int secInPlay) {
 	int res = 0;
 
@@ -33,8 +44,8 @@ int Heuristic::linePoint(int firInPlay, int secInPlay) {
 		return -20002;
 	else if (this->p[firInPlay].fourFree > 0)
 		return 22000;
-	else if (this->p[firInPlay].fourHalf > 0)
-		return 20000;
+	// else if (this->p[firInPlay].fourHalf > 0)
+	// 	return 20000;
 	else if (this->p[secInPlay].fourFree > 0)
 		return -15000;
 	else if (this->p[firInPlay].threeFree && (this->p[secInPlay].fourHalf == 0))
@@ -42,6 +53,7 @@ int Heuristic::linePoint(int firInPlay, int secInPlay) {
 	else if (this->p[secInPlay].fourHalf + this->p[secInPlay].threeFree > 1)
 		return -18000;
 	else {
+		res -= this->p[firInPlay].fourHalf * 5;
 		res += this->p[firInPlay].threeFree * 15;
 		res -= this->p[secInPlay].fourFree * 18;
 		res -= this->p[secInPlay].fourHalf * 8;
@@ -59,7 +71,7 @@ void Heuristic::deductScore() {
 		this->score += this->linePoint(me, oponent);
 	else
 		this->score -= this->linePoint(oponent, me);
-	this->score -= this->nbUsless;
+	this->score += this->nbUsless;
 	// if (this->p[oponent].five + this->p[oponent].fourFree > 0)
 	// 	this->score = 0;
 	// else if (this->p[me].five + this->p[me].fourFree > 0)

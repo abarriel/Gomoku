@@ -32,8 +32,13 @@ class Heuristic {
 		void deductScore();
 		char isAtack(bool me);
 
+		static int getCapturePoint();
+		static void increaseCapturePoint();
+		static void setCapturePoint();
+
 	private:
 
+		static int capturePoint;
 		std::map<unsigned short int, char> &grid;
 		std::stack<unsigned short int> &history;
 		char id;
@@ -49,7 +54,6 @@ class Heuristic {
 		char deductEat(unsigned short seq);
 
 };
-
  std::ostream &	operator<<( std::ostream & o, Heuristic const & i );
 
 #endif
