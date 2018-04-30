@@ -31,14 +31,14 @@ bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned shor
 unsigned short int BotHenry::initiate(std::map<unsigned short, char> grid) {
 	if (grid[0x909] == 0)
 		return 0x909;
-	else if (grid[0x708] == 0)
-		return 0x708;
-	else if (grid[0x70A] == 0)
-		return 0x70A;
-	else if (grid[0xA07] == 0)
-		return 0xA07;
-	else if (grid[0x80B] == 0)
-		return 0x80B;
+	else if (grid[0x70B] == 0)
+		return 0x70B;
+	else if (grid[0x907] == 0)
+		return 0x907;
+	else if (grid[0x909] == 0)
+		return 0x909;
+	else if (grid[0xB0B] == 0)
+		return 0xB0B;
 	else if (grid[0xB08] == 0)
 		return 0xB08;
 	else if (grid[0xA0B] == 0)
