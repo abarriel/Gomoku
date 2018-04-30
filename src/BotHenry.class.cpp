@@ -58,7 +58,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     std::size_t const generateAttackLength = mvs[0].size();
     std::size_t const size = round((generateAttackLength / 3));
     // for(int mov: mvs[0]) {
-    //     std::cout << "\ts:" << (mov >> 16)  << " "<< mov << std::endl;
+    //     std::cout << "\ts: (" << ((mov & 0xFFFF) >> 8) <<","<< (mov & 0xFF) <<")" << std::endl;
     // }
 
     if (config2score) {
@@ -287,8 +287,6 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	BotHenry::generateMove(grid, moves, value, mode, noDouble, depth);
 	tmpCurPoint += BotHenry::simulatePlay(grid, moves.front() & 0xFFFF, value);
 	tmpScore = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, tmpCurPoint, depth - 1, oponentPlace, -beta, -alpha);
-	std::cout << (moves.front() & 0xFF) << ", " << ((moves.front() & 0xFF00) >> 8) << '\n';
-	std::cout << (int)tmpScore << '\n';
 	pos = moves.front() & 0xFFFF;
 	BotHenry::undoPlay(grid, moves.front() & 0xFFFF);
 	tmpCurPoint = currentPoint;
@@ -299,11 +297,6 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 		for(int mov: (moves)) {
 			tmpCurPoint += BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
 			currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, tmpCurPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha);
-			if (depth == 2)
-			{
-				std::cout << (mov & 0xFF) << ", " << ((mov & 0xFF00) >> 8) << '\n';
-				std::cout << (int)currentRating << '\n';
-			}
 			// if (currentRating > 40000)
 			// 	return 40001;
 			// currentRating = -currentRating;
