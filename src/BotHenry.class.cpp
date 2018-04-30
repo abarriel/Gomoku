@@ -1,6 +1,8 @@
 #include "BotHenry.class.hpp"
 # define MAX_DEPTH 2
 
+char BotHenry::nbMove = 0;
+
 BotHenry::BotHenry( std::string nm ) : APlayer(nm) {
     // this
 	return;
@@ -26,6 +28,28 @@ bool BotHenry::getSquare(std::map<unsigned short int, char> &grid, unsigned shor
     return false;
 }
 
+unsigned short int BotHenry::initiate(std::map<unsigned short, char> grid) {
+	if (grid[0x909] == 0)
+		return 0x909;
+	else if (grid[0x708] == 0)
+		return 0x708;
+	else if (grid[0x70A] == 0)
+		return 0x70A;
+	else if (grid[0xA07] == 0)
+		return 0xA07;
+	else if (grid[0x80B] == 0)
+		return 0x80B;
+	else if (grid[0xB08] == 0)
+		return 0xB08;
+	else if (grid[0xA0B] == 0)
+		return 0xA0B;
+	else if (grid[0x807] == 0)
+		return 0x807;
+	else if (grid[0xB0A] == 0)
+		return 0xB0A;
+	return 0;
+}
+
 static std::vector<std::vector<int>> mvs(4);
 std::atomic_bool run(true);
 std::atomic_bool score_done(false);
@@ -40,7 +64,9 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     bool config2score = false;
 	unsigned short ret[] = {0, 0, 0, 0, 0};
 
-    if (grid.empty()) return (0x909);
+	this->nbMove++;
+    if (this->nbMove < 4)
+		return (this->initiate(grid));
 	for (size_t i = 0; i < mvs.size(); i++) {
         mvs[i].clear();
     }
