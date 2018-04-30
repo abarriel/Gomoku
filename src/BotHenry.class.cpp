@@ -313,32 +313,42 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 	int currentRating, tmpScore = -10000000;
 	unsigned short oponentPlace;
 	std::vector<int> moves;
+	char tmpCurPoint;
 
+	tmpCurPoint = currentPoint;
     if (!run) throw std::runtime_error("timeout");
 	if (oponentPoint >= 10)
-        return 10000;
+        return -50000;
 	if (GameManager::checkBoard(&grid, GameManager::instance()->getEnding()))
-		return 10000;
+		return -50000;
 	if (depth == 0)
-		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore() + 300 * currentPoint + 300 * oponentPoint;
+		return Heuristic(grid, GameManager::instance()->getHistory(), value, MAX_DEPTH % 2).run().getScore() + 600 * currentPoint - 600 * oponentPoint;
 	BotHenry::generateMove(grid, moves, value, mode, noDouble, depth);
-	BotHenry::simulatePlay(grid, moves.front() & 0xFFFF, value);
-	tmpScore = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, currentPoint, depth - 1, oponentPlace, -beta, -alpha);
+	tmpCurPoint += BotHenry::simulatePlay(grid, moves.front() & 0xFFFF, value);
+	tmpScore = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, tmpCurPoint, depth - 1, oponentPlace, -beta, -alpha);
+	std::cout << (moves.front() & 0xFF) << ", " << ((moves.front() & 0xFF00) >> 8) << '\n';
+	std::cout << (int)tmpScore << '\n';
 	pos = moves.front() & 0xFFFF;
 	BotHenry::undoPlay(grid, moves.front() & 0xFFFF);
+	tmpCurPoint = currentPoint;
 	moves.erase(moves.begin());
 	if (tmpScore >= alpha)
 		alpha = tmpScore;
 	if (tmpScore < beta)
 		for(int mov: (moves)) {
-			BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
-			currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, currentPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha);
+			tmpCurPoint += BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
+			currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, tmpCurPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha);
+			if (depth == 2)
+			{
+				std::cout << (mov & 0xFF) << ", " << ((mov & 0xFF00) >> 8) << '\n';
+				std::cout << (int)currentRating << '\n';
+			}
 			// if (currentRating > 40000)
 			// 	return 40001;
 			// currentRating = -currentRating;
 			if (currentRating > alpha && currentRating < beta)
 			{
-                currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, oponentPoint, depth - 1, oponentPlace, -beta, -alpha);
+                currentRating = -getScore(grid, 3 - value, mode, noDouble, oponentPoint, tmpCurPoint, depth - 1, oponentPlace, -beta, -alpha);
 				// if (currentRating == -999999)
 				// {
 				// 	pos = mov & 0xFFFF;
@@ -355,6 +365,7 @@ char mode, bool noDouble, char currentPoint, char oponentPoint, char depth, unsi
 				// currentRating = -currentRating;
 			}
 			BotHenry::undoPlay(grid, mov & 0xFFFF);
+			tmpCurPoint = currentPoint;
 			if (currentRating > tmpScore)
 			{
 				tmpScore = currentRating;
@@ -384,6 +395,7 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 	bool flag = true;
 	unsigned short oponentPlace;
     std::vector<int> moves;
+	char tmpCurpoint, tmpOpoPoint;
 
     (void)beta;
     if (!run) throw std::runtime_error("timeout");
@@ -391,6 +403,8 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
         return 2;
 	if (oponentPoint >= 10)
         return 0;
+	tmpCurpoint = currentPoint;
+	tmpOpoPoint = oponentPoint;
 	if (depth == 0)
 		return 0;
     if (!already)
@@ -406,8 +420,13 @@ int BotHenry::getAttack(std::map<unsigned short, char> &grid, char value, char m
 		}
 		if ((mov >> 16) == 0 && depth % 2)			//si le defenseur a win
 			return 0;
-		BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
-		attackValue = getAttack(grid, 3 - value, mode, noDouble, currentPoint, oponentPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha, 0);
+		if (depth % 2)
+			tmpOpoPoint += BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
+		else
+			tmpCurpoint += BotHenry::simulatePlay(grid, mov & 0xFFFF, value);
+		attackValue = getAttack(grid, 3 - value, mode, noDouble, tmpCurpoint, tmpOpoPoint, depth - 1, oponentPlace, -(alpha + 1), -alpha, 0);
+		tmpCurpoint = currentPoint;
+		tmpOpoPoint = oponentPoint;
 		if (attackValue == 2 && depth % 2 == 0) {
 			pos = mov & 0xFFFF;            //si l'attaque marche
 			BotHenry::undoPlay(grid, mov & 0xFFFF);

@@ -1,10 +1,10 @@
 #include "APlayer.class.hpp"
 
-APlayer::APlayer( std::string nm ) : name(nm), point(8) {
+APlayer::APlayer( std::string nm ) : name(nm), point(0) {
 	return;
 }
 
-APlayer::APlayer( void ) : point(8) {
+APlayer::APlayer( void ) : point(0) {
 	std::cout << "Name it:" << std::endl;
     std::getline(std::cin, this->name);
 	return;
