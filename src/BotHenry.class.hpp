@@ -13,8 +13,6 @@
 # include <future>
 # include <vector>
 
-// # define MAX_DEPTH 2
-
 struct resThread{
     int curScore;
     unsigned short res;

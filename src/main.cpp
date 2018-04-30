@@ -16,7 +16,9 @@ int main( int argc, char const **argv )
             GameMan = GameManager::instance(0,0);
         else if (argc == 2 && strncmp("default", argv[1], 7) == 0)
             GameMan = GameManager::instance(2,2);
-        else if (argc == 2 && strncmp("helpme", argv[1], 7) == 0)
+        else if (argc == 2 && strncmp("true", argv[1], 7) == 0)
+            GameMan = GameManager::instance(4,4);
+        else if (argc == 2 && strncmp("helpme", argv[1], 6) == 0)
             GameMan = GameManager::instance(3,3);
         else
             GameMan = GameManager::instance(1,1);

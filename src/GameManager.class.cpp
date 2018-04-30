@@ -4,7 +4,7 @@ GameManager *GameManager::p_instance = 0;
 GameManager::GameManager( char asking ) :
 	turn(1),
 	canCapture(true),
-	endingCapture(true),
+	endingCapture(false),
 	noDoubleThrees(true),
 	gameMode(0),
 	swapOportunity(false)
@@ -18,13 +18,20 @@ GameManager::GameManager( char asking ) :
         return;
     }
     if (asking == 2) {
-        this->PlayerOne = new BotHenry("White");
-		this->PlayerTwo = new Human("Black");
+        this->PlayerOne = new BotHenry("Black");
+		this->PlayerTwo = new Human("White");
         return;
     }
     if (asking == 3) {
-        this->PlayerOne = new BotHenry("White");
-		this->PlayerTwo = new HumanHelp("Black");
+        this->PlayerOne = new BotHenry("Black");
+		this->PlayerTwo = new HumanHelp("White");
+        return;
+    }
+    if (asking == 4) {
+        this->PlayerOne = new BotHenry("Black");
+		this->PlayerTwo = new Human("White");
+        this->canCapture = true;
+        this->endingCapture = true;
         return;
     }
     std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
