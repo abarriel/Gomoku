@@ -154,7 +154,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     }
     // if (check4)
         // std::cout << "\t!!!!!!getScore(4) " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
-    std::cout << "\tgetScore (ontime?)" << (int)check << " " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
+    // std::cout << "\tgetScore (ontime?)" << (int)check << " " << ret[0] << " (" << ((ret[0] & 0xFFFF) >> 8) <<","<< (ret[0] & 0xFF) <<")"<<std::endl;
     if (!check && !check4 && !ret[1] && !ret[2] && !ret[3]) {
         mvs[0].clear();
         // std::cout << "getscore and attacks move too slow. generate mov give us a good shot" << std::endl;
@@ -166,9 +166,9 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
         else if (ret[2]) ret[0] = ret[2];
         else if (ret[3]) ret[0] = ret[3];
     }
-    if (ret[1]) std::cout << "\tgetAttack(1): " << ret[1] << " (" << ((ret[1] & 0xFFFF) >> 8) <<","<< (ret[1] & 0xFF) <<")"<<std::endl;
-    if (ret[2]) std::cout << "\tgetAttack(2): " << ret[2] <<  " (" << ((ret[2] & 0xFFFF) >> 8) <<","<< (ret[2] & 0xFF) <<")"<<std::endl;
-    if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
+    // if (ret[1]) std::cout << "\tgetAttack(1): " << ret[1] << " (" << ((ret[1] & 0xFFFF) >> 8) <<","<< (ret[1] & 0xFF) <<")"<<std::endl;
+    // if (ret[2]) std::cout << "\tgetAttack(2): " << ret[2] <<  " (" << ((ret[2] & 0xFFFF) >> 8) <<","<< (ret[2] & 0xFF) <<")"<<std::endl;
+    // if (ret[3]) std::cout << "\tgetAttack(3): " << ret[3] << " (" << ((ret[3] & 0xFFFF) >> 8) <<","<< (ret[3] & 0xFF) <<")"<<std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     if (check4 && check)
         ret[0] = ret[4];
