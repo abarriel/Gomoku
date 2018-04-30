@@ -3,7 +3,7 @@
 **Make an AI capable of beating human players at Gomoku**
 
 ![
-](https://user-images.githubusercontent.com/25068709/39411763-ed04983e-4c10-11e8-82e5-3aa521d68ca3.png)
+](https://user-images.githubusercontent.com/25068709/39445047-08bf324c-4cba-11e8-894a-a361176376fa.png)
 
 ## Technical
 
