@@ -52,6 +52,6 @@ Vec &	Vec::operator=(Vec const &rhs) {
 }
 
 std::ostream &	operator<<( std::ostream & o, Vec const & i ) {
-	std::cout << "Vector : " << i.x << " - " << i.y;
+    (void)i;
 	return o;
 }

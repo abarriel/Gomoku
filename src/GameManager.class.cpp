@@ -1,7 +1,7 @@
 #include "GameManager.class.hpp"
 
 GameManager *GameManager::p_instance = 0;
-GameManager::GameManager( bool asking ) :
+GameManager::GameManager( char asking ) :
 	turn(1),
 	canCapture(true),
 	endingCapture(true),
@@ -14,58 +14,65 @@ GameManager::GameManager( bool asking ) :
     if (!asking) {
 		this->PlayerOne = new Human("Black");
         this->PlayerTwo = new Human("White");
-        // this->PlayerTwo = new BotHenry("White");
         return;
     }
-    else {
-        std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
-        std::getline(std::cin, res);
-        if (res == "pro")
-            this->gameMode = 2;
-        if (res == "long-pro")
-            this->gameMode = 3;
-        if (res == "swap")
-            this->gameMode = 4;
-        if (res == "swap2")
-            this->gameMode = 5;
-        std::cout << "Capture mode (Y/n): ";
-        std::getline(std::cin, res);
-        if (res.at(0) == 'n') {
-            this->canCapture = false;
-            this->endingCapture = false;
-        } else {
-            std::cout << "Ending capture mode (Y/n): ";
-            std::getline(std::cin, res);
-            if (res.at(0) == 'n')
-                this->endingCapture = false;
-        }
-        std::cout << "No double-threes (Y/n): ";
+    if (asking == 2) {
+        this->PlayerOne = new BotHenry("White");
+		this->PlayerTwo = new Human("Black");
+        return;
+    }
+    if (asking == 3) {
+        this->PlayerOne = new BotHenry("White");
+		this->PlayerTwo = new HumanHelp("Black");
+        return;
+    }
+    std::cout << "mode (STANDARD/pro/long-pro/swap/swap2): ";
+    std::getline(std::cin, res);
+    if (res == "pro")
+        this->gameMode = 2;
+    if (res == "long-pro")
+        this->gameMode = 3;
+    if (res == "swap")
+        this->gameMode = 4;
+    if (res == "swap2")
+        this->gameMode = 5;
+    std::cout << "Capture mode (Y/n): ";
+    std::getline(std::cin, res);
+    if (res.at(0) == 'n') {
+        this->canCapture = false;
+        this->endingCapture = false;
+    } else {
+        std::cout << "Ending capture mode (Y/n): ";
         std::getline(std::cin, res);
         if (res.at(0) == 'n')
-            this->noDoubleThrees = false;
-        std::cout << "Human player 1 (Y/n): ";
-        std::getline(std::cin, res);
-        if (res.at(0) == 'n' && !this->gameMode)
-            this->PlayerOne = new BotHenry();
-        else if(res.at(0) == 'n')
-            {
-                std::cout << "ai can only be play in standard mode" << std::endl;
-                throw std::exception();
-            }
-        else
-            this->PlayerOne = new Human();
-        std::cout << "Human player 2 (Y/n): ";
-        std::getline(std::cin, res);
-        if (res.at(0) == 'n'  && !this->gameMode)
-            this->PlayerTwo = new BotHenry();
-        else if(res.at(0) == 'n')
-            {
-                std::cout << "ai can only be play in standard mode" << std::endl;
-                throw std::exception();
-            }
-        else
-            this->PlayerTwo = new Human();
+            this->endingCapture = false;
     }
+    std::cout << "No double-threes (Y/n): ";
+    std::getline(std::cin, res);
+    if (res.at(0) == 'n')
+        this->noDoubleThrees = false;
+    std::cout << "Human player 1 (Y/n): ";
+    std::getline(std::cin, res);
+    if (res.at(0) == 'n' && !this->gameMode)
+        this->PlayerOne = new BotHenry();
+    else if(res.at(0) == 'n')
+        {
+            std::cout << "ai can only be play in standard mode" << std::endl;
+            throw std::exception();
+        }
+    else
+        this->PlayerOne = new Human();
+    std::cout << "Human player 2 (Y/n): ";
+    std::getline(std::cin, res);
+    if (res.at(0) == 'n'  && !this->gameMode)
+        this->PlayerTwo = new BotHenry();
+    else if(res.at(0) == 'n')
+        {
+            std::cout << "ai can only be play in standard mode" << std::endl;
+            throw std::exception();
+        }
+    else
+        this->PlayerTwo = new Human();
     std::cout << "debug:";
     std::getline(std::cin, res);
     if (res.at(0) == 'y')
@@ -88,7 +95,6 @@ void GameManager::fillMap(void) {
             if (p == '1' || p == '2') {
                 this->grid[(x << 8) + y] = p - 48;
             }
-            // std::cout << "y" << (int)y << "d" << std::endl;
         }
     }
 }
@@ -118,6 +124,20 @@ void GameManager::printGrid(SDLManager *SDLMan, std::map<unsigned short int, cha
 			SDLMan->placeRock(gridE[y * 256 + x], Vec(x, y));
 		}
 	}
+}
+void GameManager::printGrid(std::map<unsigned short int, char> gridE) {
+	for (char x = 0; x < 19; x++) {
+		for (char y = 0; y < 19; y++) {
+			this->SDLMan->placeRock(gridE[y * 256 + x], Vec(x, y));
+		}
+	}
+}
+void GameManager::setSDL(SDLManager *SDLMan) {
+    this->SDLMan = SDLMan;
+    return ;
+}
+SDLManager *GameManager::getSDl() {
+    return this->SDLMan;
 }
 
 void GameManager::twoTurn(APlayer *player, SDLManager *SDLMan) {
@@ -163,9 +183,6 @@ char GameManager::playTurn(SDLManager *SDLMan) {
 	APlayer *player;
 	bool skipPlace = false;
 
-    if (this->turn == 1)
-        if(this->grid.empty())
-            std::cout << "EMPTY" << std::endl;
 	if (this->turn % 2 == 1)
 		player = PlayerOne;
 	else
@@ -212,12 +229,11 @@ char GameManager::playTurn(SDLManager *SDLMan) {
     }
 	if (!skipPlace)
 		this->grid[place] = ((this->turn + 1) % 2) + 1;
-	printf("%d\n", this->canCapture);
 	if (this->canCapture)
 		player->increasePoint(capture(&this->grid, place));
 	this->printGrid(SDLMan);
 	SDLMan->render();
-    std::cout << Heuristic(grid, GameManager::instance()->getHistory(), 2, 0).run() << std::endl ;
+    // std::cout << Heuristic(grid, GameManager::instance()->getHistory(), 2, 0).run() << std::endl ;
 
 	if (player->haveWin() || checkBoard(&this->grid, this->endingCapture)) {
 		player->victory();
@@ -583,7 +599,14 @@ unsigned short int GameManager::checkEat(std::map<unsigned short int, char> *gri
         return 1;
 	return 0;
 }
+
 GameManager *GameManager::instance(bool d) { /* singleton */
+	if (!GameManager::p_instance) GameManager::p_instance = new GameManager(d);
+	return GameManager::p_instance;
+}
+
+GameManager *GameManager::instance(char d, int i) { /* singleton */
+    (void)i;
 	if (!GameManager::p_instance) GameManager::p_instance = new GameManager(d);
 	return GameManager::p_instance;
 }

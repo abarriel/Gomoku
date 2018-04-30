@@ -12,8 +12,6 @@ Heuristic::Heuristic( std::map<unsigned short int, char> &gr, std::stack<unsigne
 }
 
 int Heuristic::getScore() const {
-    // if (score < 0)
-        // std::cout << "VACCCCCCCCCCHHHHHHHHHHHHHEEEE" << std::endl;
     return this->score; }
 Heuristic::playerData Heuristic::getPlayerdata(int i) const { return this->p[i]; }
 
@@ -203,7 +201,7 @@ void Heuristic::countLine( void ) {
 }
 
 std::ostream &	operator<<( std::ostream & o, Heuristic const & i ) { // the worst function i have ever done hahaha
-	std::cout << "score: " << i.getScore() << std::endl;
+	// std::cout << "score: " << i.getScore() << std::endl;
     if (i.getPlayerdata(0).threeHalf || i.getPlayerdata(0).threeFree || i.getPlayerdata(0).fourHalf || i.getPlayerdata(0).fourFree || i.getPlayerdata(0).five)
         std::cout << " P1 ->" << std::endl;
     if (i.getPlayerdata(0).threeHalf || i.getPlayerdata(0).threeFree)

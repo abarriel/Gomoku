@@ -12,16 +12,18 @@
 # include "SDLManager.class.hpp"
 # include "APlayer.class.hpp"
 # include "Human.class.hpp"
+# include "HumanHelp.class.hpp"
 # include "BotHenry.class.hpp"
 # include "Vec.class.hpp"
 
 class GameManager {
 
 	public:
-		GameManager(bool asking = true);
+		GameManager(char asking = 0);
 		virtual ~GameManager( void );
 		void printGrid(SDLManager *SDLMan, std::map<unsigned short int, char> gridE);
 		void printGrid( SDLManager *SDLMan );
+		void printGrid( std::map<unsigned short int, char> gridE );
 		char playTurn( SDLManager *SDLMan );
 		unsigned short int threeTurn(APlayer *player, SDLManager *SDLMan);
 		void twoTurn(APlayer *player, SDLManager *SDLMan);
@@ -42,11 +44,14 @@ class GameManager {
 		static unsigned short int SeqFromTo(std::map<unsigned short, char>& grid, unsigned short from, unsigned short to, unsigned short dir, char value, unsigned short skip);
 		static char capture(std::map<unsigned short int, char> *grid, unsigned short int place, char replace = 0);
 		static void undoCapture(std::map<unsigned short int, char> *grid, unsigned short int place, char replace = 0);
+		static GameManager *instance(char, int);
 		static GameManager *instance(bool = true);
         static char checkBoard(std::map<unsigned short int, char> *grid, bool ending);
         static char checkPosVictory(std::map<unsigned short int, char> *grid, unsigned short pos, bool ending);
         void debugGrid(void);
         static void debugGrid(std::map<unsigned short int, char> &grid);
+        void setSDL(SDLManager *SDLMan);
+         SDLManager *getSDl();
 	private:
 
 		std::map<unsigned short int, char> grid;
@@ -54,6 +59,7 @@ class GameManager {
         static GameManager *p_instance;
 		unsigned short int	turn;
 		APlayer *PlayerOne;
+        SDLManager *SDLMan;
 		APlayer *PlayerTwo;
 		bool canCapture;
 		bool endingCapture;

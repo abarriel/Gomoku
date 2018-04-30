@@ -12,15 +12,20 @@ int main( int argc, char const **argv )
 	GameManager *GameMan;
     // GameManager::instance();
     try {
-        if (argc == 2 && strncmp("default", argv[1], 7) == 0)
-            GameMan = GameManager::instance(false);
+        if (argc == 2 && strncmp("battle", argv[1], 6) == 0)
+            GameMan = GameManager::instance(0,0);
+        else if (argc == 2 && strncmp("default", argv[1], 7) == 0)
+            GameMan = GameManager::instance(2,2);
+        else if (argc == 2 && strncmp("helpme", argv[1], 7) == 0)
+            GameMan = GameManager::instance(3,3);
         else
-            GameMan = GameManager::instance(true);
+            GameMan = GameManager::instance(1,1);
    	} catch (std::exception &e) {
            delete GameMan;
            return 0;
 	}
 	SDLMan = new SDLManager();
+    GameMan->setSDL(SDLMan);
     GameMan->printGrid(SDLMan);
 	SDLMan->render();
 	auto start = std::chrono::high_resolution_clock::now();
