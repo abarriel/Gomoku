@@ -32,8 +32,8 @@ std::atomic_bool score_done(false);
 std::atomic_bool score_done4(false);
 
 unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char value, char mode, bool noDouble = true) const {
-	auto realStart = std::chrono::high_resolution_clock::now();
 	bool jcp2;
+	static int oldScore = 0;
     std::vector<std::future<int>> thread(4);
     char currentPoint, enemyPoint, check, check4;
     std::map<unsigned short, char> grid1, grid2, grid3;
@@ -41,13 +41,14 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
 	unsigned short ret[] = {0, 0, 0, 0, 0};
 
     if (grid.empty()) return (0x909);
-    for (size_t i = 0; i < mvs.size(); i++) {
+	for (size_t i = 0; i < mvs.size(); i++) {
         mvs[i].clear();
     }
     check = 0;
     currentPoint = this->getPoint();
     enemyPoint = GameManager::instance()->otherPoint(this->getPoint());
-
+	if ((Heuristic(grid, GameManager::instance()->getHistory(), value, 0).run().getScore() + 600 * currentPoint - 600 * enemyPoint) > oldScore)
+		Heuristic::increaseCapturePoint();
 	BotHenry::generateAttack(grid, mvs[0], value, mode, noDouble, 10, jcp2);
 
 	// for(int mov: (mvs[0])) {
@@ -103,7 +104,7 @@ unsigned short int BotHenry::play(std::map<unsigned short, char> grid, char valu
     //     std::cout << "\t(4)getScore4 abort" << std::endl;
     // }
     try {
-        getScore.get();
+        oldScore = getScore.get();
     } catch (std::runtime_error &e) {
         // std::cout << "(2)getScore abort" << std::endl;
     }

@@ -1,5 +1,7 @@
 #include "Heuristic.class.hpp"
 
+int Heuristic::capturePoint = 600;
+
 Heuristic::~Heuristic( void ) {
 
 	return;
@@ -23,6 +25,15 @@ Heuristic& Heuristic::run() {
 	this->deductScore();
     return *this;
 }
+
+int Heuristic::getCapturePoint() {
+	return Heuristic::capturePoint; }
+
+void Heuristic::increaseCapturePoint() {
+	Heuristic::capturePoint += 10; }
+
+void Heuristic::setCapturePoint() {
+	Heuristic::capturePoint = 600; }
 
 int Heuristic::linePoint(int firInPlay, int secInPlay) {
 	int res = 0;

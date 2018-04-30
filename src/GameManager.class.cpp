@@ -9,6 +9,7 @@ GameManager::GameManager( char asking ) :
 	gameMode(0),
 	swapOportunity(false)
 {
+	Heuristic::setCapturePoint();
 	std::string res;
 	this->history = new std::stack<unsigned short int>;
     if (!asking) {
@@ -347,6 +348,7 @@ void GameManager::undoCapture(std::map<unsigned short int, char> *grid, unsigned
 void GameManager::removeCapture(std::map<unsigned short int, char> *grid, unsigned short place, unsigned short dir, char replace) {
 	unsigned short tmp = place + dir * 3;
 
+	(void)replace;
 	if (!((tmp & 0xFF) < 0 || (tmp & 0xFF) > 18 || (tmp >> 8) < 0 || (tmp >> 8) > 18 ||
 		(*grid)[tmp] != (*grid)[place] ||
 		3 != (*grid)[place + dir] || 3 != (*grid)[place + dir * 2])
