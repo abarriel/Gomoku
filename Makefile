@@ -2,10 +2,10 @@ NAME = Gomoku
 
 # COMPILATION
 CC = clang++
-CCFLAGS = -Wall -Wextra -std=c++0x -pthread -I sdl/include
+CCFLAGS = -Wall -Wextra -std=c++0x -pthread -I /Users/abarriel/sdl/include
 
 LNK = clang++
-LNKFLAGS = -L sdl/lib -l SDL2 -l SDL2_image
+LNKFLAGS = -L /Users/abarriel/sdl/lib -l SDL2 -l SDL2_image
 
 # DIRECTORIES
 LIBDIR = lib
