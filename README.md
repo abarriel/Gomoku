@@ -13,7 +13,7 @@
 -  In Gomoku, there is a [game strategy](http://gomokuworld.com/gomoku/1)  call VCT (Victory by Continuous Threats), at some point, we are sure to win if we keep attacking, the opponent wouldn't have any option, either to block the four, double three or lose. We are looking for this particular win position. We use a different heuristic and our **Min Max Algorithm** with **depth** set to **12**
 
 ## Strategies
-* Due to the time restrictions, we have to use imagination to optimize our algo the best we can. we check the board using **bitwise** for our heuristic
+* Due to the time restrictions, we use a lot of imagination to optimize our algo the best we can. We check the board using **bitwise** for our heuristic for example.
 	```
 	11: opponent's stone
 	01: my stone
@@ -31,7 +31,7 @@ We haven't spend too much time doing a nice menu, everything work with CLI.
 
 ## Installation
 
-Due to our school, and our restricted privileges. We added the SDL2 and SDL2_image library compiled in the `{PROJECT}/sdl/`. To run in on a different system, you should update the Makefile a bit, remove `-L sdl/lib -I sdl/include` ..
+Due to our school, and our restricted privileges. We added the SDL2 and SDL2_image library compiled in the `{PROJECT}/sdl/`. To run it on a different system, you should update the Makefile a bit, remove `-L sdl/lib -I sdl/include`.
 
 
 
