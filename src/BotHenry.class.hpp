@@ -43,6 +43,10 @@ class BotHenry : public APlayer{
         static bool getSquare(std::map<unsigned short int, char> &grid, unsigned short value);
 		virtual bool wantSwap( std::map<unsigned short int, char> grid ) const;
 		virtual bool wantDoublePlay( std::map<unsigned short int, char> grid ) const;
+		static unsigned short int initiate(std::map<unsigned short, char> grid);
+
+	private:
+		static char nbMove;
 };
 
 
